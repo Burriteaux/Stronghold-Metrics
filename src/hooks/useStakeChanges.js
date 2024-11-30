@@ -25,14 +25,11 @@ export const useStakeChanges = () => {
         const activatingStake = parseFloat(changes.activating_stake) * 1e9;
         const deactivatingStake = parseFloat(changes.deactivating_stake) * 1e9;
         
-        const netChange = activatingStake - deactivatingStake;
-        
         setStakeChanges({
           activating_stake: activatingStake,
           activating_accounts: changes.activating_count,
           deactivating_stake: deactivatingStake,
-          deactivating_accounts: changes.deactivating_count,
-          net_change: netChange
+          deactivating_accounts: changes.deactivating_count
         });
         setError(null);
 

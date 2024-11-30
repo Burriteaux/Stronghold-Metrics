@@ -12,6 +12,8 @@ const UpcomingStakeChangesPanel = () => {
     return Math.round(lamports / 1e9).toLocaleString();
   };
 
+  const netChange = (stakeChanges?.activating_stake || 0) - (stakeChanges?.deactivating_stake || 0);
+
   return (
     <div className="dashboard-panel upcoming-changes-panel">
       <h2>Upcoming Stake Changes</h2>
@@ -31,8 +33,8 @@ const UpcomingStakeChangesPanel = () => {
         <div className="status-item net-change">
           <label>Expected Net Change</label>
           <value>
-            {stakeChanges?.net_change > 0 ? '+' : ''}
-            {formatSOL(stakeChanges?.net_change)} SOL
+            {netChange > 0 ? '+' : ''}
+            {formatSOL(netChange)} SOL
           </value>
         </div>
       </div>

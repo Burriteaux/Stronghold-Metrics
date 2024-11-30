@@ -11,6 +11,14 @@
   ],
   "routes": [
     {
+      "src": "/validator-stats/(.*)",
+      "dest": "/$1"
+    },
+    {
+      "src": "/validator-stats",
+      "dest": "/"
+    },
+    {
       "src": "/static/(.*)",
       "dest": "/static/$1"
     },

@@ -1,0 +1,1881 @@
+/* Add these styles at the top of the file */
+.app-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 50px;
+  width: 100px;
+  background: #191919;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  z-index: 1001;
+  border-right: none;
+}
+
+.app-header img {
+  height: 35px;
+  width: auto;
+}
+
+/* Update these existing styles */
+.solana-dashboard {
+  padding-top: 60px;
+  min-height: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.epoch-progress-bar-container {
+  position: fixed;
+  top: 0;
+  left: 100px;
+  right: 0;
+  background: #191919;
+  height: 50px;
+  padding: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  max-width: 1500px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding-right: 0px;
+}
+
+/* Remove unused keyframes and animations */
+
+@keyframes beatGlow {
+  0%, 40%, 100% { filter: drop-shadow(0 0 5px rgba(209, 251, 14, 0.4)); }
+  20% { filter: drop-shadow(0 0 15px rgba(209, 251, 14, 0.8)); }
+  60% { filter: drop-shadow(0 0 12px rgba(209, 251, 14, 0.7)); }
+}
+
+.epoch-progress.flash {
+  animation: beatGlow 0.7s ease-in-out;
+  will-change: filter;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.progress-ring__circle--progress {
+  animation: pulse 3s ease-in-out infinite;
+  will-change: opacity;
+}
+
+/* Remove unused rotating segment styles */
+
+.progress-ring {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  will-change: transform;
+}
+
+.progress-ring__circle {
+  transition: stroke-dashoffset 0.5s ease-out;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+}
+
+.stronghold-logo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50%;
+  height: 50%;
+}
+
+.activated-stake {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 1.2em;
+}
+
+.activated-stake h3 {
+  margin-bottom: 5px;
+}
+
+.activated-stake p {
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+.metric-grid {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 0 5px;
+}
+
+.metric-item {
+  background-color: transparent;
+  border-radius: 8px;
+  padding: 8px 12px;
+  text-align: center;
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.metric-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 8px;
+  padding: 1px;
+  background: linear-gradient(to left, 
+    rgba(62, 66, 70, 0.4) 0%, 
+    rgba(62, 66, 70, 0.6) 50%, 
+    rgba(62, 66, 70, 0.8) 100%
+  );
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.metric-item h4 {
+  font-size: 0.75rem;
+  font-weight: 900;
+  margin: 0 0 4px 0;
+  color: white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.metric-item p {
+  font-size: 0.95rem;
+  font-weight: 900;
+  margin: 0;
+  color: #D1FB0E;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.metric-item p:contains("Validating") {
+  color: #D1FB0E;
+}
+
+.metric-item p:contains("Delinquent") {
+  color: #ff6b6b;
+}
+
+.epoch-info {
+  width: 37.4px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  z-index: 1002;
+  background: #191919;
+}
+
+.epoch-number,
+.epoch-progress-percentage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 60px;
+  justify-content: space-between;
+}
+
+.epoch-number .label,
+.epoch-progress-percentage .label {
+  color: white;
+  font-size: 0.8rem;
+  margin-bottom: 0;
+  height: 18px;
+  display: flex;
+  align-items: center;
+}
+
+.epoch-number .value,
+.epoch-progress-percentage .value {
+  color: #D1FB0E;
+  font-size: 1.2rem;
+  font-weight: bold;
+  height: 28px;
+  display: flex;
+  align-items: center;
+}
+
+.main-feature-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+  min-height: 40vh;
+  margin-bottom: 20px;
+}
+
+.epoch-info-grid {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.main-feature {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 400px;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  max-width: 800px;
+  justify-self: center;
+  position: relative;
+  align-self: start;
+  margin-top: -40px;
+}
+
+.metrics {
+  margin-top: 0;
+  padding-bottom: 20px;
+  width: 100%;
+}
+
+.epoch-info-box {
+  background-color: transparent;
+  border-radius: 8px;
+  padding: 8px 12px;
+  text-align: center;
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.epoch-info-box::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 8px;
+  padding: 1px;
+  background: linear-gradient(to left, 
+    rgba(209, 251, 14, 0.2) 0%, 
+    rgba(209, 251, 14, 0.3) 50%, 
+    rgba(209, 251, 14, 0.4) 100%
+  );
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.epoch-info-box h4 {
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 900;
+  position: relative;
+  z-index: 2;
+  margin: 0 0 4px 0;
+  white-space: nowrap;
+}
+
+.epoch-info-box p {
+  color: #D1FB0E;
+  font-size: 0.95rem;
+  font-weight: 900;
+  position: relative;
+  z-index: 2;
+  margin: 0;
+  white-space: nowrap;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.epoch-progress.loading .progress-ring__circle--progress {
+  animation: rotate 2s linear infinite;
+}
+
+.progress-ring__circle--bg {
+  stroke: #1E2022;
+}
+
+.progress-ring__circle--progress {
+  stroke: #D1FB0E;
+  transition: stroke-dashoffset 0.35s;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+}
+
+@keyframes rotateProgress {
+  0% {
+    transform: rotate(-90deg);
+  }
+  100% {
+    transform: rotate(270deg);
+  }
+}
+
+.epoch-progress.loading .progress-ring__circle--progress {
+  animation: rotateProgress 2s linear infinite;
+}
+
+@keyframes beat {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.epoch-progress.beat-animation {
+  animation: beat 0.6s ease-out;
+}
+
+@media (max-width: 480px) {
+  .metric-grid, .epoch-info-grid {
+    gap: 8px;
+  }
+
+  .metric-item, .epoch-info-box {
+    padding: 6px 8px;
+  }
+
+  .metric-item h4, .epoch-info-box h4 {
+    font-size: 0.7rem;
+  }
+
+  .metric-item p, .epoch-info-box p {
+    font-size: 0.85rem;
+  }
+
+  .main-feature-container,
+  .epoch-info-grid,
+  .main-feature,
+  .metrics {
+    margin-bottom: 0;
+  }
+
+  .metrics {
+    margin-top: 0;
+    padding-bottom: 16px;
+  }
+
+  .epoch-info-grid {
+    margin-bottom: 12px;
+  }
+
+  .solana-dashboard {
+    padding: 10px 0;
+  }
+
+  .main-feature-container {
+    min-height: 30vh;
+    margin-bottom: 10px;
+  }
+
+  .metrics {
+    padding-bottom: 10px;
+  }
+}
+
+/* Additional styles for the dashboard layout */
+.solana-dashboard {
+  min-height: auto;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  justify-content: flex-start;
+}
+
+.metrics {
+  margin-top: 0;
+  padding-bottom: 0;
+  width: 100%;
+}
+
+/* Add this at the end of the file */
+.footer {
+  display: none;
+}
+
+@media (max-width: 480px) {
+  .footer {
+    padding: 5px 0;
+    font-size: 0.7rem;
+    margin-top: 10px;
+  }
+}
+
+/* Add these new styles while keeping existing ones */
+
+.dashboard-grid {
+  display: grid;
+  grid-template-areas:
+    "header header header"
+    "left main right";
+  grid-template-columns: 320px 1fr 320px;
+  gap: 20px;
+  width: 100%;
+  max-width: 1600px;
+  margin: 45px auto 0;
+  padding: 0 30px;
+  box-sizing: border-box;
+}
+
+.validator-info-header {
+  grid-area: header;
+  width: 100%;
+  height: auto;
+  min-height: 25px;
+  background: #1e1e1e;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 15px 15px;
+  margin: 0 auto 15px;
+  box-sizing: border-box;
+  max-width: 1600px;
+}
+
+.validator-info-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  gap: 20px;
+  position: relative;
+}
+
+.validator-info-header .status-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 15px;
+  align-items: center;
+  flex: 1;
+}
+
+.validator-info-header .metric-rings-container {
+  display: flex;
+  gap: 35px;
+  align-items: center;
+  height: 100%;
+  padding: 5px 0;
+  margin: 0 15px 0 0;
+  border: none;
+  background: none;
+  flex-shrink: 0;
+}
+
+.validator-info-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 8px;
+  padding: 1px;
+  background: linear-gradient(to left, 
+    rgba(255, 255, 255, 0.35) 0%, 
+    rgba(255, 255, 255, 0.25) 50%, 
+    rgba(255, 255, 255, 0.35) 100%
+  );
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.validator-info-header .status-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 15px;
+  align-items: center;
+  width: 100%;
+}
+
+.validator-info-header .status-item {
+  padding: 1px 6px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.validator-info-header h2 {
+  display: none;
+}
+
+.validator-info-header .status-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 15px;
+  align-items: center;
+  width: 100%;
+}
+
+.validator-info-header .status-item {
+  padding: 1px 6px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.validator-info-header label {
+  font-size: 0.65rem;
+  margin: 0;
+  line-height: 1;
+  padding: 0;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.validator-info-header value {
+  font-size: 0.75rem;
+  line-height: 1;
+  padding: 0;
+  color: #D1FB0E;
+}
+
+.left-panels {
+  grid-area: left;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 320px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  justify-self: start;
+}
+
+.main-feature {
+  grid-area: main;
+}
+
+.right-panels {
+  grid-area: right;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 320px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  justify-self: end;
+}
+
+.dashboard-panel {
+  background: #1e1e1e;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+  border-radius: 8px;
+  padding: 12px 15px;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 15px;
+}
+
+.dashboard-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 8px;
+  padding: 1px;
+  background: linear-gradient(to left, 
+    rgba(255, 255, 255, 0.35) 0%, 
+    rgba(255, 255, 255, 0.25) 50%, 
+    rgba(255, 255, 255, 0.35) 100%
+  );
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.dashboard-panel h3 {
+  color: #D1FB0E;
+  font-size: 1.1rem;
+  margin: 0 0 15px 0;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(209, 251, 14, 0.2);
+}
+
+.chart-container {
+  height: 200px;
+  margin: 10px 0;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .dashboard-grid {
+    grid-template-areas:
+      "left"
+      "right";
+    grid-template-columns: 1fr;
+    gap: 15px;
+    padding: 20px;
+    width: calc(100% - 40px);
+  }
+
+  .left-panels,
+  .right-panels {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+  }
+}
+
+/* Style the main feature panel */
+.dashboard-panel.main-feature {
+  grid-area: main;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 400px;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  max-width: 800px;
+  justify-self: center;
+  position: relative;
+  align-self: start;
+  margin-top: -40px;
+}
+
+/* Style the metric panels with 3:1 ratio */
+.dashboard-panel.metric-panel {
+  height: auto;
+  min-height: 120px;
+}
+
+.metric-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2px;
+  z-index: 1;
+}
+
+.metric-panel-header h4 {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
+  margin: 0;
+}
+
+.chart-container {
+  flex-grow: 1;
+  position: relative;
+  min-height: 70px;
+  margin-top: 2px;
+}
+
+.metric-panel-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #D1FB0E;
+}
+
+.metric-unit {
+  font-size: 0.7rem;
+  margin-left: 4px;
+  opacity: 0.8;
+}
+
+/* Update the header area */
+.dashboard-header {
+  grid-area: header;
+  width: 100%;
+}
+
+/* Layout for the horizontal panels */
+.metrics-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
+  width: 100%;
+}
+
+.status-panel {
+  background: #1e1e1e;
+  padding: 15px;
+  border-radius: 8px;
+  height: auto;
+  min-height: 120px;
+}
+
+.status-panel h2 {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.75rem;
+  margin: 0 0 12px 0;
+  text-align: left;
+  font-weight: 500;
+}
+
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.status-item {
+  text-align: left;
+}
+
+.status-item label {
+  display: block;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+  margin-bottom: 3px;
+}
+
+.status-item value {
+  display: block;
+  color: #D1FB0E;
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.02em;
+}
+
+.status-item value.error {
+  color: #ff6b6b;
+}
+
+.status-item value.success {
+  color: #D1FB0E;
+}
+
+.status-item value.next-slot {
+  color: #D1FB0E;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.status-item value.behind {
+  font-size: 0.8rem;
+  color: #888;
+  margin-left: 8px;
+}
+
+.leader-slots-panel {
+  margin-top: 0;
+}
+
+.leader-slots-panel .chart-wrapper {
+  grid-column: span 2;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.leader-slots-panel .chart-container {
+  background: rgba(209, 251, 14, 0.05);
+  border-radius: 4px;
+  padding: 4px;
+}
+
+.leader-slots-panel .status-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.leader-slots-panel .chart-container canvas {
+  filter: drop-shadow(0 0 2px rgba(209, 251, 14, 0.2));
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.panel-value {
+  color: #D1FB0E;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.left-panels {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  grid-area: left;
+  max-width: 350px;
+  min-width: 350px;
+  height: fit-content;
+  margin: 0;
+  padding-top: 0;
+}
+
+.validator-info-panel .status-item value.pubkey {
+  font-family: monospace;
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
+}
+
+.vote-credits-panel .chart-wrapper,
+.validator-info-panel .status-grid {
+  margin-top: 8px;
+}
+
+.left-panels {
+  max-width: 400px;
+  min-width: 350px;
+}
+
+/* Update responsive styles */
+@media (max-width: 1200px) {
+  .left-panels {
+    max-width: none;
+    width: 100%;
+  }
+}
+
+/* Update/add these styles */
+.metric-panel {
+  margin-top: 0;
+}
+
+.metric-panel .chart-wrapper {
+  grid-column: span 2;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.metric-panel .chart-container {
+  background: rgba(209, 251, 14, 0.05);
+  border-radius: 4px;
+  padding: 4px;
+  height: 80px !important;
+  width: 100%;
+  position: relative;
+}
+
+.metric-panel .status-grid {
+  flex-grow: 1;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.metric-panel canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+.metric-unit {
+  font-size: 0.7rem;
+  margin-left: 4px;
+  opacity: 0.8;
+}
+
+/* Add styles for right panels */
+.right-panels {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  grid-area: right;
+  max-width: 350px;
+  min-width: 350px;
+  height: fit-content;
+  margin: 0;
+  padding-top: 0;
+}
+
+/* Update the epoch progress sizing */
+.epoch-progress {
+  width: 250px !important;
+  height: 250px !important;
+  margin: 0 auto;
+  position: relative;
+}
+
+/* Ensure proper spacing for side panels */
+.left-panels,
+.right-panels {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  max-width: 350px;
+  min-width: 350px;
+  height: fit-content;
+  margin: 0;
+  padding-top: 0;
+}
+
+/* Update responsive styles */
+@media (max-width: 1600px) {
+  .dashboard-grid {
+    padding: 20px 40px;
+    width: calc(100% - 80px);
+  }
+
+  .epoch-progress {
+    width: 30vmin !important;
+    height: 30vmin !important;
+  }
+}
+
+@media (max-width: 1400px) {
+  .dashboard-grid {
+    grid-template-columns: 300px 1fr 300px;
+    gap: 15px;
+  }
+
+  .left-panels,
+  .right-panels {
+    max-width: 300px;
+  }
+
+  .epoch-progress {
+    width: 220px !important;
+    height: 220px !important;
+  }
+}
+
+@media (max-width: 1200px) {
+  .dashboard-grid {
+    grid-template-columns: 280px 1fr 280px;
+    gap: 12px;
+  }
+
+  .left-panels,
+  .right-panels {
+    max-width: 280px;
+  }
+
+  .epoch-progress {
+    width: 200px !important;
+    height: 200px !important;
+  }
+}
+
+/* Add styles for the center logo area */
+.logo-container {
+  grid-area: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  position: relative;
+}
+
+.stronghold-logo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 45%;
+  height: 45%;
+  z-index: 2;
+}
+
+/* Remove all circuit-line related styles */
+.circuit-lines,
+.circuit-line,
+.circuit-line-left-1,
+.circuit-line-left-2,
+.circuit-line-right-1,
+.circuit-line-right-2,
+.circuit-dot,
+.logo-container {
+  display: none;
+}
+
+/* Update the epoch progress bar styles */
+.epoch-progress-bar-container {
+  position: fixed;
+  top: 0;
+  left: 100px;
+  right: 0;
+  background: #191919;
+  height: 50px;
+  padding: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  max-width: 1500px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding-right: 0px;
+}
+
+.epoch-info {
+  width: 37.4px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  z-index: 1002;
+  background: #191919;
+}
+
+.epoch-number {
+  color: #FFFFFF;
+  font-family: "articulat-heavy-cf", sans-serif;
+  font-weight: 900;
+  font-size: 1.4rem;
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  z-index: 1002;
+}
+
+.epoch-progress-bar {
+  flex-grow: 1;
+  height: 3px;
+  background: rgba(209, 251, 14, 0.1);
+  border-radius: 0;
+  overflow: hidden;
+  position: relative;
+  margin: 0 20px;
+  z-index: 1001;
+}
+
+.epoch-progress-bar-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #D1FB0E 0%, #9FBF0F 100%);
+  box-shadow: 0 0 4px rgba(209, 251, 14, 0.3);
+  transition: width 0.5s ease-out;
+  border-radius: 0;
+}
+
+.epoch-progress-text {
+  width: 120px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1rem;
+  white-space: nowrap;
+  margin: 0;
+  padding: 0 20px 0 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .epoch-progress-bar-container {
+    padding-right: 0px;
+  }
+  
+  .epoch-info {
+    width: 37.4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .epoch-progress-bar-container {
+    padding-right: 0px;
+  }
+  
+  .epoch-info {
+    width: 37.4px;
+  }
+  
+  .epoch-number {
+    font-size: 1.2rem;
+  }
+  
+  .epoch-progress-text {
+    font-size: 0.85rem;
+    padding-right: 10px;
+  }
+}
+
+/* Add or update copy button styles */
+.pubkey-container {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.copy-button {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  padding: 0 2px;
+  font-size: 0.8rem;
+  transition: color 0.2s ease;
+}
+
+.copy-button:hover {
+  color: #D1FB0E;
+}
+
+.pubkey {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.dashboard-panel:hover {
+  border-color: rgba(209, 251, 14, 0.2);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Important values */
+.apy-value, 
+.next-leader-value,
+.stake-value {
+  color: #D1FB0E;
+  font-weight: 500;
+}
+
+/* Status indicators */
+.status-value {
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+}
+
+.status-value.active {
+  background: rgba(209, 251, 14, 0.1);
+  color: #D1FB0E;
+}
+
+.status-value.error {
+  background: rgba(255, 107, 107, 0.1);
+  color: #ff6b6b;
+}
+
+.loading-state {
+  opacity: 0.7;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.7; }
+  50% { opacity: 0.4; }
+  100% { opacity: 0.7; }
+}
+
+/* Typography Base Styles */
+.dashboard-panel {
+  font-family: "articulat-cf", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Panel Headers */
+.dashboard-panel h2 {
+  font-family: "articulat-heavy-cf", sans-serif;
+  font-weight: 900;
+  font-style: normal;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 12px;
+}
+
+/* Labels */
+.status-item label {
+  font-family: "articulat-cf", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 2px;
+}
+
+/* Values - now using Articulat CF instead of JetBrains Mono */
+.status-item value {
+  font-family: "articulat-cf", sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.02em;
+}
+
+/* Progress Text */
+.epoch-percentage,
+.epoch-time {
+  font-family: "articulat-cf", sans-serif;
+  font-weight: 400;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Epoch Number */
+.epoch-number {
+  font-family: "articulat-heavy-cf", sans-serif;
+  font-weight: 900;
+  color: #FFFFFF;
+  font-size: 0.9rem;
+}
+
+/* Highlight Values */
+.apy-value,
+.next-leader-value,
+.stake-value,
+.status-value.active,
+.pubkey {
+  font-family: "articulat-cf", sans-serif;
+  font-weight: 700;
+  color: #D1FB0E;
+}
+
+/* Technical Values (slots, hashes, pubkeys, etc) */
+.slot-number,
+.pubkey,
+.hash-value,
+.last-vote-slot,
+.next-leader-slot,
+.epoch-slot,
+.tps-value,
+.stake-amount {
+  font-family: "articulat-heavy-cf", sans-serif;
+  font-weight: 900;
+  font-style: normal;
+  letter-spacing: 0.02em;
+}
+
+/* Error States */
+.status-value.error,
+.error-text {
+  color: #ff6b6b;
+}
+
+/* Also update h3 and h4 for consistency */
+.dashboard-panel h3,
+.dashboard-panel h4 {
+  font-family: "articulat-heavy-cf", sans-serif;
+  font-weight: 900;
+  font-style: normal;
+}
+
+/* Important metrics and values using Heavy weight */
+.apy-value,
+.stake-value,
+.next-leader-value,
+.slot-number,
+.status-value.active,
+.epoch-number,
+.pubkey,
+.tps-value,
+.vote-success-value {
+  font-family: "articulat-heavy-cf", sans-serif;
+  font-weight: 900;
+  font-style: normal;
+  color: #D1FB0E;
+}
+
+/* Status panel values */
+.status-item value {
+  font-family: "articulat-heavy-cf", sans-serif;
+  font-weight: 900;
+  font-style: normal;
+  font-size: 0.85rem;
+  color: #fff;
+  letter-spacing: 0.02em;
+}
+
+/* Panel Headers */
+.dashboard-panel h2,
+.dashboard-panel h3,
+.dashboard-panel h4 {
+  font-family: "articulat-heavy-cf", sans-serif;
+  font-weight: 900;
+  font-style: normal;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 12px;
+}
+
+/* Keep labels in regular weight */
+.status-item label {
+  font-family: "articulat-cf", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 2px;
+}
+
+/* Update validator info header width */
+.validator-info-header {
+  grid-area: header;
+  width: 100%;
+  height: auto;
+  min-height: 25px;
+  background: #1e1e1e;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 15px 15px;
+  margin: 0 auto 15px;
+  box-sizing: border-box;
+  max-width: 1600px;
+}
+
+/* Update responsive widths */
+@media (max-width: 1400px) {
+  .validator-info-header {
+    max-width: 100%;
+    margin: 0 30px 15px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .validator-info-header {
+    margin: 0 20px 15px;
+  }
+}
+
+/* Add these new styles for the leader slot progress */
+.leader-slot-progress {
+  width: 100%;
+  height: 2px;
+  background: rgba(209, 251, 14, 0.1);
+  border-radius: 0;
+  margin-top: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.leader-slot-progress-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #D1FB0E 0%, #9FBF0F 100%);
+  box-shadow: 0 0 4px rgba(209, 251, 14, 0.3);
+  transition: width 1s linear;
+  border-radius: 0;
+}
+
+/* Update the status item to accommodate the progress bar */
+.status-item {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+}
+
+.status-item.with-progress {
+  margin-bottom: 2px;
+}
+
+.status-item.with-progress value {
+  margin-bottom: 2px;
+}
+
+/* Add a pulsing animation for when we're close to the next slot */
+@keyframes progressPulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.6; }
+  100% { opacity: 1; }
+}
+
+.leader-slot-progress-fill.imminent {
+  animation: progressPulse 1s ease-in-out infinite;
+}
+
+.epoch-progress-text {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+/* Add these styles for the metric rings */
+.metric-rings-panel {
+  margin-bottom: 15px;
+}
+
+.metric-rings-container {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  height: 100%;
+  padding: 5px 0;
+  margin: 0;
+  border: none;
+  background: none;
+}
+
+.metric-rings-container .metric-ring-container {
+  width: 60px;
+  height: 60px;
+  position: relative;
+}
+
+.metric-rings-container .metric-value {
+  font-size: 0.9rem;
+  font-weight: 900;
+  color: #D1FB0E;
+  line-height: 1;
+}
+
+.metric-rings-container .metric-name {
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+
+/* Remove panel styling from metric rings */
+.metric-rings-container .metric-ring {
+  border: none;
+  box-shadow: none;
+  background: none;
+}
+
+/* Add styles for stake history panel */
+.stake-history-panel {
+  margin-bottom: 15px;
+}
+
+.stake-history-panel .chart-wrapper {
+  grid-column: span 2;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.stake-history-panel .chart-container {
+  background: rgba(209, 251, 14, 0.05);
+  border-radius: 4px;
+  padding: 4px;
+  height: 80px !important;
+}
+
+.change-percentage {
+  font-size: 0.75rem;
+  opacity: 0.7;
+  margin-left: 4px;
+}
+
+/* Add these styles for the upcoming changes panel */
+.upcoming-changes-panel {
+  margin-bottom: 15px;
+}
+
+.upcoming-changes-panel .stake-change-info {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.upcoming-changes-panel .account-count {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.upcoming-changes-panel .net-change {
+  grid-column: span 2;
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(209, 251, 14, 0.1);
+}
+
+.upcoming-changes-panel .net-change value {
+  font-size: 1.1rem;
+  font-weight: 900;
+}
+
+.upcoming-changes-panel .status-item value {
+  font-family: "articulat-heavy-cf", sans-serif;
+}
+
+.upcoming-changes-panel .success {
+  color: #D1FB0E;
+}
+
+.upcoming-changes-panel .deactivating {
+  color: #000000;
+  -webkit-text-stroke: 0.5px #D1FB0E;
+  text-stroke: 0.5px #D1FB0E;
+  text-shadow: 
+    -0.25px -0.25px 0 #D1FB0E,
+    0.25px -0.25px 0 #D1FB0E,
+    -0.25px 0.25px 0 #D1FB0E,
+    0.25px 0.25px 0 #D1FB0E;
+}
+
+.metric-ring-container {
+  position: relative;
+  display: inline-block;
+}
+
+.metric-ring-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+}
+
+.metric-ring-bg {
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+  stroke-linecap: butt;
+}
+
+.metric-ring-progress {
+  transition: stroke-dashoffset 0.3s ease;
+  stroke-linecap: butt;
+}
+
+.metric-ring-container .metric-value {
+  font-size: 0.6rem;
+  font-weight: 900;
+  color: #D1FB0E;
+  line-height: 1;
+}
+
+.metric-ring-container .metric-name {
+  font-size: 0.45rem;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+
+/* Override the metric ring text styles with higher specificity */
+.validator-info-header .metric-rings-container .metric-ring-container .metric-value {
+  font-size: 0.9rem !important;
+  font-weight: 900;
+  color: #D1FB0E;
+  line-height: 1;
+}
+
+.validator-info-header .metric-rings-container .metric-ring-container .metric-name {
+  font-size: 0.6rem !important;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+
+/* Update responsive styles for header and progress bar */
+.app-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 50px;
+  width: 100px;
+  background: #191919;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  z-index: 1001;
+  border-right: none;
+}
+
+.epoch-progress-bar-container {
+  position: fixed;
+  top: 0;
+  left: 100px;
+  right: 0;
+  background: #191919;
+  height: 50px;
+  padding: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  max-width: 1500px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding-right: 0px;
+}
+
+.epoch-info {
+  width: 37.4px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  z-index: 1002;
+  background: #191919;
+}
+
+.epoch-number {
+  color: #FFFFFF;
+  font-family: "articulat-heavy-cf", sans-serif;
+  font-weight: 900;
+  font-size: 1.4rem;
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  z-index: 1002;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .app-header {
+    width: 70px; /* Smaller header on mobile */
+    padding: 0 5px;
+  }
+  
+  .epoch-progress-bar-container {
+    left: 70px; /* Match smaller header */
+    padding: 0 10px;
+    gap: 10px;
+  }
+  
+  .epoch-info {
+    width: 37.4px; /* Keep exact width even on mobile */
+  }
+  
+  .epoch-number {
+    font-size: 1.2rem; /* Smaller font on mobile */
+  }
+  
+  .epoch-progress-text {
+    font-size: 0.8rem;
+    padding-right: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-header {
+    width: 50px; /* Even smaller on very small screens */
+  }
+  
+  .epoch-progress-bar-container {
+    left: 50px;
+    padding: 0 5px;
+    gap: 5px;
+  }
+  
+  .epoch-info {
+    width: 37.4px; /* Maintain exact width on smallest screens */
+  }
+  
+  .epoch-number {
+    font-size: 1rem;
+  }
+  
+  .epoch-progress-text {
+    font-size: 0.75rem;
+    padding-right: 5px;
+  }
+}
+
+/* Add minimum widths to prevent layout breaking */
+@media (min-width: 320px) {
+  .epoch-progress-bar-container {
+    min-width: 270px;
+  }
+}
+
+/* Add these styles to the existing SolanaDashboard.css */
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.time-range-selector {
+  display: flex;
+  gap: 2px;
+}
+
+.time-range-button {
+  background: rgba(30, 32, 34, 0.9);
+  border: 1px solid rgba(209, 251, 14, 0.2);
+  color: rgba(209, 251, 14, 0.6);
+  padding: 3px 6px;
+  font-size: 0.65rem;
+  font-family: "articulat-heavy-cf", sans-serif;
+  font-weight: 900;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.time-range-button:hover {
+  border-color: rgba(209, 251, 14, 0.4);
+  color: rgba(209, 251, 14, 0.8);
+  background: rgba(30, 32, 34, 0.95);
+}
+
+.time-range-button.active {
+  background: rgba(209, 251, 14, 0.1);
+  border-color: #D1FB0E;
+  color: #D1FB0E;
+}
+
+.time-range-button:focus {
+  outline: none;
+  border-color: #D1FB0E;
+}
+
+/* Update panel header styles to ensure consistent left alignment */
+.dashboard-panel h2 {
+  text-align: left;
+  margin: 0 0 12px 0;
+  font-family: "articulat-heavy-cf", sans-serif;
+  font-weight: 900;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Ensure panel header has consistent spacing */
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  width: 100%;
+  text-align: left;
+}
+
+/* Override any existing center alignment */
+.dashboard-panel.status-panel h2,
+.dashboard-panel.metric-panel h2,
+.dashboard-panel.leader-slots-panel h2,
+.dashboard-panel.stake-history-panel h2 {
+  text-align: left;
+}
+
+/* Add these styles to the existing CSS file */
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(25, 25, 25, 0.95);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.loading-logo {
+  width: 300px;
+  height: auto;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(209, 251, 14, 0.1);
+  border-top: 3px solid #D1FB0E;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Add styles for stakewiz logo */
+.stakewiz-logo {
+  width: 100px;
+  height: auto;
+  opacity: 0.8;
+  margin-top: 10px;
+}

@@ -1,0 +1,191 @@
+body {
+  background-color: #191919;
+  color: #D1FB0E;
+  font-family: articulat-cf, sans-serif;
+  font-weight: 900;
+  font-style: normal;
+  font-size: 1.5rem;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.App {
+  text-align: center;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  padding: 10px 20px;
+}
+
+.App-header h1 {
+  color: #D1FB0E;
+  font-size: 1.5rem;
+  font-weight: 900;
+  margin: 0;
+  text-align: left;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.solana-dashboard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  background-color: transparent;
+  width: 100%;
+  flex-grow: 1;
+  overflow: hidden;
+  border-radius: 20px;
+  padding: 10px; /* Further reduced padding */
+  box-shadow: none;
+  height: calc(100vh - 60px); /* Reduced header height subtraction */
+}
+
+.main-feature {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+  width: 100%;
+  height: 100%; /* Changed from max-height to height */
+}
+
+.epoch-info {
+  margin-bottom: 10px; /* Reduced margin */
+}
+
+.epoch-info h2 {
+  font-size: 1.5rem;
+  font-weight: 900;
+  margin: 0;
+}
+
+.epoch-progress {
+  position: relative;
+  width: 70vmin; /* Increased from 50vmin */
+  height: 70vmin; /* Increased from 50vmin */
+  max-width: 70vh; /* Changed from 400px to 80vh */
+  max-height: 70vh; /* Changed from 400px to 80vh */
+}
+
+.progress-ring {
+  width: 100%;
+  height: 100%;
+}
+
+.progress-ring__circle {
+  transition: stroke-dashoffset 0.35s;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+}
+
+.progress-ring__circle--progress {
+  stroke: #D1FB0E; /* Change this line to use the new color */
+}
+
+.stronghold-logo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%; /* Increased from 60% */
+  height: 80%; /* Increased from 60% */
+}
+
+.epoch-progress-percentage {
+  font-size: 1.5rem;
+  margin-top: 5px;
+}
+
+.metrics {
+  width: 100%;
+  max-width: 100%;
+  position: static;
+  background-color: rgba(25, 25, 25, 0.9);
+  padding: 20px 0; /* Increased padding */
+  margin-top: 20px; /* Increased space above the metrics */
+}
+
+.metric-grid {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px; /* Increased gap */
+  padding: 0 20px; /* Increased horizontal padding */
+}
+
+.metric-item {
+  background-color: rgba(62, 66, 70, 0.5);
+  border-radius: 12px; /* Increased border radius */
+  padding: 16px; /* Increased padding */
+  text-align: center;
+  flex: 1 1 calc(20% - 20px);
+  min-width: 120px; /* Increased minimum width */
+  max-width: 180px; /* Increased maximum width */
+}
+
+.metric-item h4 {
+  font-size: 1.2rem; /* Slightly reduced font size for labels */
+  font-weight: 900;
+  margin: 0 0 8px 0; /* Increased bottom margin */
+}
+
+.metric-item p {
+  font-size: 1.5rem;
+  font-weight: 900;
+  margin: 0;
+}
+
+.error {
+  color: #ff6b6b;
+  font-size: 1.5rem;
+  font-weight: 900;
+}
+
+@media (max-height: 600px) {
+  .epoch-progress {
+    width: 60vmin;
+    height: 60vmin;
+  }
+  
+  .metric-item {
+    padding: 12px; /* Increased padding for smaller screens */
+  }
+  
+  .metric-item h4 {
+    font-size: 1rem; /* Reduced font size for labels on smaller screens */
+    margin: 0 0 6px 0;
+  }
+  
+  .metric-item p {
+    font-size: 1.2rem; /* Reduced font size for values on smaller screens */
+  }
+}

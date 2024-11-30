@@ -1,0 +1,2 @@
+clients:
+  - url: https://YOUR_USERNAME:YOUR_API_TOKEN@logs-prod-006.grafana.net/loki/api/v1/push 

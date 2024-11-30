@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  solana_monitor:
+    build: .
+    container_name: solana_monitor
+    volumes:
+      - ./config.yml:/app/config.yml
+      - ./prometheus.yml:/app/prometheus.yml
+      - ./promtail.yml:/app/promtail.yml
+    ports:
+      - "1234:1234"
+    restart: unless-stopped
+
+  promtail:
+    image: grafana/promtail:latest
+    container_name: promtail
+    volumes:
+      - ./promtail.yml:/etc/promtail/config.yml
+      - /var/log/solana:/var/log/solana
+    command: -config.file=/etc/promtail/config.yml
+    restart: unless-stopped 

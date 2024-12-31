@@ -5,9 +5,7 @@ import SolanaDashboard from './SolanaDashboard';
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <SolanaDashboard />
-      </header>
+      <SolanaDashboard />
     </div>
   );
 }

@@ -4,11 +4,11 @@
   top: 0;
   left: 0;
   height: 50px;
-  width: 100px;
+  width: 45px;
   background: #191919;
   display: flex;
   align-items: center;
-  padding: 0 10px;
+  padding: 0 3px;
   z-index: 1001;
   border-right: none;
 }
@@ -20,7 +20,7 @@
 
 /* Update these existing styles */
 .solana-dashboard {
-  padding-top: 60px;
+  padding-top: 300px;
   min-height: auto;
   display: flex;
   flex-direction: column;
@@ -29,8 +29,8 @@
 
 .epoch-progress-bar-container {
   position: fixed;
-  top: 0;
-  left: 100px;
+  top: 50px;
+  left: 45px;
   right: 0;
   background: #191919;
   height: 50px;
@@ -42,7 +42,6 @@
   max-width: 1500px;
   margin: 0 auto;
   box-sizing: border-box;
-  padding-right: 0px;
 }
 
 /* Remove unused keyframes and animations */
@@ -179,13 +178,13 @@
 }
 
 .epoch-info {
-  width: 37.4px;
+  width: 8px;
   height: 50px;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-start;
   margin: 0;
   padding: 0;
+  margin-left: -12px;
   position: relative;
   z-index: 1002;
   background: #191919;
@@ -452,7 +451,7 @@
   gap: 20px;
   width: 100%;
   max-width: 1600px;
-  margin: 55px auto 0;
+  margin: 120px auto 0;
   padding: 0 30px;
   box-sizing: border-box;
 }
@@ -463,13 +462,15 @@
   height: auto;
   min-height: 25px;
   background: #1e1e1e;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  padding: 15px 15px;
+  border: none;
+  box-shadow: var(--shadow);
+  border-radius: 12px;
+  padding: 15px;
   margin: 0 auto 15px;
   box-sizing: border-box;
   max-width: 1600px;
+  position: relative;
+  overflow: hidden;
 }
 
 .validator-info-content {
@@ -508,16 +509,13 @@
   left: 0;
   right: 0;
   bottom: 0;
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 1px;
   background: linear-gradient(to left, 
     rgba(255, 255, 255, 0.35) 0%, 
     rgba(255, 255, 255, 0.25) 50%, 
-    rgba(255, 255, 255, 0.35) 100%
-  );
-  -webkit-mask: 
-    linear-gradient(#fff 0 0) content-box, 
-    linear-gradient(#fff 0 0);
+    rgba(255, 255, 255, 0.35) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   pointer-events: none;
@@ -602,10 +600,10 @@
 
 .dashboard-panel {
   background: #1e1e1e;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: none;
+  box-shadow: var(--shadow);
   transition: all 0.2s ease;
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 12px 15px;
   position: relative;
   overflow: hidden;
@@ -619,16 +617,13 @@
   left: 0;
   right: 0;
   bottom: 0;
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 1px;
   background: linear-gradient(to left, 
     rgba(255, 255, 255, 0.35) 0%, 
     rgba(255, 255, 255, 0.25) 50%, 
-    rgba(255, 255, 255, 0.35) 100%
-  );
-  -webkit-mask: 
-    linear-gradient(#fff 0 0) content-box, 
-    linear-gradient(#fff 0 0);
+    rgba(255, 255, 255, 0.35) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   pointer-events: none;
@@ -1038,8 +1033,8 @@
 /* Update the epoch progress bar styles */
 .epoch-progress-bar-container {
   position: fixed;
-  top: 0;
-  left: 100px;
+  top: 50px;
+  left: 45px;
   right: 0;
   background: #191919;
   height: 50px;
@@ -1051,17 +1046,16 @@
   max-width: 1500px;
   margin: 0 auto;
   box-sizing: border-box;
-  padding-right: 0px;
 }
 
 .epoch-info {
-  width: 37.4px;
+  width: 8px;
   height: 50px;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-start;
   margin: 0;
   padding: 0;
+  margin-left: -12px;
   position: relative;
   z-index: 1002;
   background: #191919;
@@ -1074,14 +1068,15 @@
   font-size: 1.4rem;
   height: 50px;
   line-height: 50px;
-  text-align: center;
+  text-align: left;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   margin: 0;
   padding: 0;
   position: relative;
   z-index: 1002;
+  margin-left: -8px;
 }
 
 .epoch-progress-bar {
@@ -1119,6 +1114,10 @@
   padding: 0 20px 0 0;
 }
 
+.epoch-progress-text::after {
+  content: none;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .epoch-progress-bar-container {
@@ -1126,7 +1125,8 @@
   }
   
   .epoch-info {
-    width: 37.4px;
+    width: 10px;
+    padding-left: 0;
   }
 }
 
@@ -1136,7 +1136,8 @@
   }
   
   .epoch-info {
-    width: 37.4px;
+    width: 10px;
+    padding-left: 0;
   }
   
   .epoch-number {
@@ -1372,13 +1373,15 @@
   height: auto;
   min-height: 25px;
   background: #1e1e1e;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  padding: 15px 15px;
+  border: none;
+  box-shadow: var(--shadow);
+  border-radius: 12px;
+  padding: 15px;
   margin: 0 auto 15px;
   box-sizing: border-box;
   max-width: 1600px;
+  position: relative;
+  overflow: hidden;
 }
 
 /* Update responsive widths */
@@ -1477,7 +1480,7 @@
 .metric-rings-container .metric-value {
   font-size: 0.9rem;
   font-weight: 900;
-  color: #D1FB0E;
+  color: #FFFFFF;
   line-height: 1;
 }
 
@@ -1632,19 +1635,19 @@
   top: 0;
   left: 0;
   height: 50px;
-  width: 100px;
+  width: 45px;
   background: #191919;
   display: flex;
   align-items: center;
-  padding: 0 10px;
+  padding: 0 3px;
   z-index: 1001;
   border-right: none;
 }
 
 .epoch-progress-bar-container {
   position: fixed;
-  top: 0;
-  left: 100px;
+  top: 50px;
+  left: 45px;
   right: 0;
   background: #191919;
   height: 50px;
@@ -1656,17 +1659,16 @@
   max-width: 1500px;
   margin: 0 auto;
   box-sizing: border-box;
-  padding-right: 0px;
 }
 
 .epoch-info {
-  width: 37.4px;
+  width: 8px;
   height: 50px;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-start;
   margin: 0;
   padding: 0;
+  margin-left: -12px;
   position: relative;
   z-index: 1002;
   background: #191919;
@@ -1679,14 +1681,15 @@
   font-size: 1.4rem;
   height: 50px;
   line-height: 50px;
-  text-align: center;
+  text-align: left;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   margin: 0;
   padding: 0;
   position: relative;
   z-index: 1002;
+  margin-left: -8px;
 }
 
 /* Responsive adjustments */
@@ -1703,7 +1706,8 @@
   }
   
   .epoch-info {
-    width: 37.4px; /* Keep exact width even on mobile */
+    width: 10px; /* Keep exact width even on mobile */
+    padding-left: 0;
   }
   
   .epoch-number {
@@ -1728,7 +1732,8 @@
   }
   
   .epoch-info {
-    width: 37.4px; /* Maintain exact width on smallest screens */
+    width: 10px; /* Maintain exact width on smallest screens */
+    padding-left: 0;
   }
   
   .epoch-number {
@@ -1878,4 +1883,137 @@
   height: auto;
   opacity: 0.8;
   margin-top: 10px;
+}
+
+/* Remove these classes if they exist */
+.epoch-progress-text,
+.epoch-percentage,
+.epoch-progress-percentage {
+  display: none !important;
+}
+
+/* Also remove any ::after or ::before content */
+.epoch-progress-text::after,
+.epoch-progress-text::before,
+.epoch-percentage::after,
+.epoch-percentage::before,
+.epoch-progress-percentage::after,
+.epoch-progress-percentage::before {
+  content: none !important;
+}
+
+/* Update bento grid spacing if needed */
+.bento-grid {
+  margin-top: 30px;
+  display: grid;
+  gap: 15px;
+  padding: 0 15px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .solana-dashboard {
+    padding-top: 250px;
+  }
+  
+  .bento-grid {
+    margin-top: 100px;
+    gap: 8px;
+    padding: 0 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .solana-dashboard {
+    padding-top: 200px;
+  }
+  
+  .bento-grid {
+    margin-top: 80px;
+    gap: 8px;
+    padding: 0 8px;
+  }
+}
+
+/* Update header link styles */
+.app-header a {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  text-decoration: none;
+  color: inherit;
+}
+
+.app-header a:hover {
+  opacity: 0.9;
+}
+
+.app-header img {
+  height: 35px;
+  width: auto;
+  transition: transform 0.2s ease;
+}
+
+.app-header a:hover img {
+  transform: scale(1.05);
+}
+
+/* Update metric rings styles */
+.metric-rings-container .metric-value {
+  font-size: 0.9rem;
+  font-weight: 900;
+  color: #FFFFFF;
+  line-height: 1;
+}
+
+.metric-rings-container .metric-name {
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+
+/* Make sure the rings stay green */
+.metric-ring circle {
+  stroke: #D1FB0E;
+}
+
+/* Keep the ring background color */
+.metric-ring circle:first-child {
+  stroke: rgba(209, 251, 14, 0.1);
+}
+
+/* Update metric rings value color */
+.metric-rings-container .metric-value,
+.metric-rings-container value,
+.metric-rings-panel value {
+  font-size: 0.9rem;
+  font-weight: 900;
+  color: #FFFFFF !important; /* Force white color */
+  line-height: 1;
+}
+
+/* Keep the metric name/label color dimmed */
+.metric-rings-container .metric-name,
+.metric-rings-container label,
+.metric-rings-panel label {
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+
+/* Ensure the rings stay green */
+.metric-rings-container circle,
+.metric-rings-panel circle {
+  stroke: #D1FB0E;
+}
+
+/* Keep ring background color */
+.metric-rings-container circle:first-child,
+.metric-rings-panel circle:first-child {
+  stroke: rgba(209, 251, 14, 0.1);
 }

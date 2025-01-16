@@ -35,17 +35,15 @@ ChartJS.register(
   Filler
 );
 
+// This should be in an environment variable
 const connection = new Connection('https://mainnet.helius-rpc.com/?api-key=f0751d28-271a-4b42-a667-3333a6c49d7c');
 
 function SolanaDashboard() {
-  const isLoading = useLoadingState();
-  const [epochData, setEpochData] = useState({ info: null, progress: 0 });
-  const [validatorData, setValidatorData] = useState({ info: null, status: null });
-  const [error, setError] = useState(null);
-  const [leaderSlotsCount, setLeaderSlotsCount] = useState(0);
-  const [lastFlashedProgress, setLastFlashedProgress] = useState(0);
-  const [retryCount, setRetryCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+  const [epochData, setEpochData] = useState({ progress: 0, info: null });
+  const [validatorData, setValidatorData] = useState({ info: null, status: null });
+  const [leaderSlotsCount, setLeaderSlotsCount] = useState(0);
   const [clusterTps, setClusterTps] = useState(0);
   const [votePercentage, setVotePercentage] = useState(100);
   const [tpsHistory, setTpsHistory] = useState(Array(20).fill(null));
@@ -68,6 +66,9 @@ function SolanaDashboard() {
     previous: [],
     twoBefore: []
   });
+  const [error, setError] = useState(null);
+  const [lastFlashedProgress, setLastFlashedProgress] = useState(0);
+  const [retryCount, setRetryCount] = useState(0);
 
   const epochProgressRef = useRef(null);
 
@@ -376,82 +377,206 @@ function SolanaDashboard() {
     }
   }, [initialLoadComplete, fetchStakeHistory]);
 
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      try {
+        setIsLoading(true);
+        const [voteAccounts, epochInfo, performance] = await Promise.all([
+          connection.getVoteAccounts(),
+          connection.getEpochInfo(),
+          connection.getRecentPerformanceSamples(1)
+        ]);
+        // Process data...
+      } catch (error) {
+        console.error('Error fetching initial data:', error);
+      } finally {
+        setTimeout(() => {
+          setIsLoading(false);
+          setInitialLoadComplete(true);
+        }, 1500);
+      }
+    };
+
+    fetchInitialData();
+  }, []);
+
+  // Add batch fetching for multiple data points
+  const fetchBatchData = useCallback(async () => {
+    const [voteAccounts, epochInfo, performance] = await Promise.all([
+      connection.getVoteAccounts(),
+      connection.getEpochInfo(),
+      connection.getRecentPerformanceSamples(1)
+    ]);
+    // Process all data at once
+    return { voteAccounts, epochInfo, performance };
+  }, [connection]);
+
+  const fetchCriticalData = async () => {
+    try {
+      const [voteAccounts, epochInfo] = await Promise.all([
+        connection.getVoteAccounts(),
+        connection.getEpochInfo(),
+      ]);
+      return { voteAccounts, epochInfo };
+    } catch (error) {
+      console.error('Error fetching critical data:', error);
+      throw error;
+    }
+  };
+
+  const fetchNonCriticalData = async () => {
+    try {
+      const performance = await connection.getRecentPerformanceSamples(1);
+      return { performance };
+    } catch (error) {
+      console.error('Error fetching non-critical data:', error);
+      return {};
+    }
+  };
+
+  const setInitialData = (data) => {
+    if (data.voteAccounts) {
+      // Handle vote accounts data
+    }
+    if (data.epochInfo) {
+      setEpochData(prev => ({ ...prev, info: data.epochInfo }));
+    }
+  };
+
+  const setAdditionalData = (data) => {
+    if (data.performance) {
+      // Handle performance data
+    }
+  };
+
+  // Update your useEffect for progressive loading
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        // Load critical data first
+        const criticalData = await fetchCriticalData();
+        setInitialData(criticalData);
+        
+        // Then load non-critical data
+        const nonCriticalData = await fetchNonCriticalData();
+        setAdditionalData(nonCriticalData);
+      } catch (error) {
+        setError(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadData();
+  }, []);
+
+  const fetchTpsData = useCallback(async () => {
+    try {
+      const performance = await connection.getRecentPerformanceSamples(1);
+      if (performance && performance.length > 0) {
+        const currentTps = Math.round(
+          (performance[0].numTransactions / performance[0].samplePeriodSecs)
+        );
+        
+        setClusterTps(currentTps);
+        setTpsHistory(prev => {
+          const newHistory = [...prev.slice(1), currentTps];
+          return newHistory;
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching TPS data:', error);
+    }
+  }, [connection]);
+
+  useEffect(() => {
+    if (initialLoadComplete) {
+      fetchTpsData();
+      const interval = setInterval(fetchTpsData, 10000); // Update every 10 seconds
+      return () => clearInterval(interval);
+    }
+  }, [initialLoadComplete, fetchTpsData]);
+
   return (
-    <>
+    <div className="solana-dashboard">
       <LoadingOverlay isLoading={isLoading} />
-      <div className="solana-dashboard">
-        <header className="app-header">
+      <header className="app-header">
+        <a href="https://strongholdsol.com/" target="_blank" rel="noopener noreferrer">
           <img src={logo} alt="Stronghold Logo" />
-        </header>
-        <EpochProgressBar progress={epochData.progress} />
-        <div className="dashboard-grid">
-          <ValidatorInfo />
-          <div className="left-panels">
-            <StakewizMetrics />
-            <LeaderSlotsPanel 
-              currentEpoch={epochData.info?.epoch}
-              epochLeaderSlots={epochLeaderSlots}
-              setEpochLeaderSlots={setEpochLeaderSlots}
-              connection={connection}
-              validatorIdentityKey={validatorIdentityKey}
-            />
-            <VoteSuccessPanel />
-          </div>
-          <div className="main-feature">
-            <div 
-              ref={epochProgressRef}
-              className="epoch-progress"
-            >
-              <svg viewBox="0 0 360 360" className="progress-ring">
-                <circle
-                  className="progress-ring__circle progress-ring__circle--bg"
-                  stroke="#1E2022"
-                  strokeWidth="21"
-                  fill="transparent"
-                  r="160"
-                  cx="180"
-                  cy="180"
-                />
-                <circle
-                  className="progress-ring__circle progress-ring__circle--progress"
-                  stroke="#D1FB0E"
-                  strokeWidth="21"
-                  fill="transparent"
-                  r="160"
-                  cx="180"
-                  cy="180"
-                  strokeLinecap="butt"
-                  strokeDasharray={`${2 * Math.PI * 160}`}
-                />
-              </svg>
-              <img
-                src={strongholdLogo}
-                alt="Stronghold Logo"
-                className="stronghold-logo"
+        </a>
+      </header>
+      <EpochProgressBar progress={epochData.progress} />
+      <div className="dashboard-grid">
+        <ValidatorInfo />
+        <div className="left-panels">
+          <StakewizMetrics />
+          <LeaderSlotsPanel 
+            currentEpoch={epochData.info?.epoch}
+            epochLeaderSlots={epochLeaderSlots}
+            setEpochLeaderSlots={setEpochLeaderSlots}
+            connection={connection}
+            validatorIdentityKey={validatorIdentityKey}
+          />
+          <VoteSuccessPanel />
+        </div>
+        <div className="main-feature">
+          <div 
+            ref={epochProgressRef}
+            className="epoch-progress"
+          >
+            <svg viewBox="0 0 360 360" className="progress-ring">
+              <circle
+                className="progress-ring__circle progress-ring__circle--bg"
+                stroke="#1E2022"
+                strokeWidth="21"
+                fill="transparent"
+                r="160"
+                cx="180"
+                cy="180"
               />
-            </div>
-          </div>
-          <div className="right-panels">
-            <StakeHistoryPanel />
-            <UpcomingStakeChangesPanel />
-            <MetricPanel 
-              label="Cluster TPS" 
-              value={clusterTps || "0"} 
-              unit="TPS"
-              data={tpsHistory}
-              isTPS={true}
+              <circle
+                className="progress-ring__circle progress-ring__circle--progress"
+                stroke="#D1FB0E"
+                strokeWidth="21"
+                fill="transparent"
+                r="160"
+                cx="180"
+                cy="180"
+                strokeLinecap="butt"
+                strokeDasharray={`${2 * Math.PI * 160}`}
+              />
+            </svg>
+            <img
+              src={strongholdLogo}
+              alt="Stronghold Logo"
+              className="stronghold-logo"
             />
           </div>
         </div>
+        <div className="right-panels">
+          <StakeHistoryPanel />
+          <UpcomingStakeChangesPanel />
+          <MetricPanel 
+            label="Cluster TPS" 
+            value={clusterTps || "0"} 
+            unit="TPS"
+            data={tpsHistory}
+            isTPS={true}
+          />
+        </div>
       </div>
-    </>
+    </div>
   );
 }
 
 const MetricPanel = memo(({ label, value, unit, data, isTPS, isStake }) => {
-  const validData = data.filter(d => d !== null);
+  // Filter out null values and ensure numbers
+  const validData = useMemo(() => 
+    data.filter(d => d !== null).map(Number),
+    [data]
+  );
   
-  const chartData = {
+  const chartData = useMemo(() => ({
     labels: Array(validData.length).fill(''),
     datasets: [{
       data: validData,
@@ -463,12 +588,14 @@ const MetricPanel = memo(({ label, value, unit, data, isTPS, isStake }) => {
       stepped: isStake,
       pointRadius: 0,
     }]
-  };
+  }), [validData, isStake]);
 
-  const chartOptions = {
+  const chartOptions = useMemo(() => ({
     responsive: true,
     maintainAspectRatio: false,
-    animation: false,
+    animation: {
+      duration: 0 // Disable animations for better performance
+    },
     plugins: {
       legend: {
         display: false
@@ -486,10 +613,7 @@ const MetricPanel = memo(({ label, value, unit, data, isTPS, isStake }) => {
         displayColors: false,
         callbacks: {
           label: function(context) {
-            const value = isStake ? 
-              Math.round(context.raw).toLocaleString() :
-              context.raw;
-            return `${value}${unit}`;
+            return `${context.raw.toLocaleString()}${unit}`;
           }
         }
       }
@@ -500,9 +624,6 @@ const MetricPanel = memo(({ label, value, unit, data, isTPS, isStake }) => {
         grid: {
           display: false,
           drawBorder: false
-        },
-        ticks: {
-          display: false
         }
       },
       y: {
@@ -511,23 +632,11 @@ const MetricPanel = memo(({ label, value, unit, data, isTPS, isStake }) => {
           display: false,
           drawBorder: false
         },
-        ticks: {
-          display: false
-        },
-        beginAtZero: !isStake,
-        min: validData.length > 0 ? Math.min(...validData) * 0.95 : 0,
-        max: validData.length > 0 ? Math.max(...validData) * 1.05 : 100
-      }
-    },
-    layout: {
-      padding: {
-        top: 5,
-        bottom: 5,
-        left: 0,
-        right: 0
+        min: Math.min(...validData) * 0.95,
+        max: Math.max(...validData) * 1.05
       }
     }
-  };
+  }), [validData, unit]);
 
   return (
     <div className="dashboard-panel status-panel metric-panel">
@@ -542,6 +651,7 @@ const MetricPanel = memo(({ label, value, unit, data, isTPS, isStake }) => {
             <Line 
               data={chartData} 
               options={chartOptions}
+              redraw={false}
             />
           </div>
         </div>

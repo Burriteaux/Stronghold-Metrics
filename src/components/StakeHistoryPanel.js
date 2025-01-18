@@ -29,11 +29,11 @@ const StakeHistoryPanel = () => {
       <h2>Active Stake</h2>
       <div className="chart-wrapper">
         <div className="chart-container">
-          <ResponsiveContainer width="100%" height={120}>
+          <ResponsiveContainer width="100%" height={90}>
             <AreaChart data={displayData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
               <defs>
                 <linearGradient id="colorStake" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#D1FB0E" stopOpacity={0.2}/>
+                  <stop offset="0%" stopColor="#D1FB0E" stopOpacity={0.2}/>
                   <stop offset="95%" stopColor="#D1FB0E" stopOpacity={0.02}/>
                 </linearGradient>
               </defs>

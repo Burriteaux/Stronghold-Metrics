@@ -2,18 +2,7 @@ import React, { useState, useEffect, useRef, memo, useCallback, useMemo } from '
 import { Connection, PublicKey } from '@solana/web3.js';
 import strongholdLogo from './stronghold-vector.svg';
 import './SolanaDashboard.css';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler
-} from 'chart.js';
-import { Line } from 'react-chartjs-2';
+import { AreaChart, Area, ResponsiveContainer, Tooltip } from 'recharts';
 import StakewizMetrics from './components/StakewizMetrics';
 import ValidatorInfo from './components/ValidatorInfo';
 import logo from './stronghold-logo.svg';
@@ -23,19 +12,6 @@ import { useEpochInfo } from './hooks/useEpochInfo';
 import VoteSuccessPanel from './components/VoteSuccessPanel';
 import LoadingOverlay from './components/LoadingOverlay';
 import { useLoadingState } from './hooks/useLoadingState';
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler
-);
-
-// This should be in an environment variable
 const connection = new Connection('https://mainnet.helius-rpc.com/?api-key=f0751d28-271a-4b42-a667-3333a6c49d7c');
 
 function SolanaDashboard() {
@@ -569,90 +545,57 @@ function SolanaDashboard() {
   );
 }
 
-const MetricPanel = memo(({ label, value, unit, data, isTPS, isStake }) => {
-  // Filter out null values and ensure numbers
-  const validData = useMemo(() => 
-    data.filter(d => d !== null).map(Number),
-    [data]
-  );
-  
-  const chartData = useMemo(() => ({
-    labels: Array(validData.length).fill(''),
-    datasets: [{
-      data: validData,
-      borderColor: '#D1FB0E',
-      backgroundColor: 'rgba(209, 251, 14, 0.1)',
-      fill: true,
-      tension: 0.2,
-      borderWidth: 1.5,
-      stepped: isStake,
-      pointRadius: 0,
-    }]
-  }), [validData, isStake]);
+const MetricPanel = memo(({ label, value, unit, data, isTPS }) => {
+  const chartData = data.map((value, index) => ({
+    time: index,
+    value: value || 0
+  }));
 
-  const chartOptions = useMemo(() => ({
-    responsive: true,
-    maintainAspectRatio: false,
-    animation: {
-      duration: 0 // Disable animations for better performance
-    },
-    plugins: {
-      legend: {
-        display: false
-      },
-      tooltip: {
-        enabled: true,
-        mode: 'index',
-        intersect: false,
-        backgroundColor: 'rgba(30, 32, 34, 0.9)',
-        titleColor: '#D1FB0E',
-        bodyColor: '#fff',
-        borderColor: '#D1FB0E',
-        borderWidth: 1,
-        padding: 8,
-        displayColors: false,
-        callbacks: {
-          label: function(context) {
-            return `${context.raw.toLocaleString()}${unit}`;
-          }
-        }
-      }
-    },
-    scales: {
-      x: {
-        display: false,
-        grid: {
-          display: false,
-          drawBorder: false
-        }
-      },
-      y: {
-        display: false,
-        grid: {
-          display: false,
-          drawBorder: false
-        },
-        min: Math.min(...validData) * 0.95,
-        max: Math.max(...validData) * 1.05
-      }
+  const CustomTooltip = ({ active, payload }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="custom-tooltip">
+          <p className="tooltip-value">
+            {payload[0].value.toLocaleString()}{unit}
+          </p>
+        </div>
+      );
     }
-  }), [validData, unit]);
+    return null;
+  };
 
   return (
     <div className="dashboard-panel status-panel metric-panel">
       <h2>{label}</h2>
       <div className="status-grid">
         <div className="status-item">
-          <label>Current</label>
           <value>{value.toLocaleString()}{unit && <span className="metric-unit">{unit}</span>}</value>
         </div>
         <div className="chart-wrapper">
           <div className="chart-container">
-            <Line 
-              data={chartData} 
-              options={chartOptions}
-              redraw={false}
-            />
+            <ResponsiveContainer width="100%" height={60}>
+              <AreaChart data={chartData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#D1FB0E" stopOpacity={0.2}/>
+                    <stop offset="95%" stopColor="#D1FB0E" stopOpacity={0.02}/>
+                  </linearGradient>
+                </defs>
+                <Tooltip 
+                  content={<CustomTooltip />}
+                  wrapperStyle={{ fontSize: '12px' }}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="value"
+                  stroke="#D1FB0E"
+                  strokeWidth={1.5}
+                  fill="url(#colorValue)"
+                  isAnimationActive={false}
+                  dot={false}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
           </div>
         </div>
       </div>
@@ -681,145 +624,83 @@ const LeaderSlotsPanel = memo(({
   connection,
   validatorIdentityKey
 }) => {
-  // Keep track of the last processed slot
-  const lastProcessedSlot = useRef(0);
-  const [currentSlot, setCurrentSlot] = useState(null);
+  const [slotsPerEpoch, setSlotsPerEpoch] = useState(432000); // Default Solana slots per epoch
+  const [firstSlotInEpoch, setFirstSlotInEpoch] = useState(0);
 
   useEffect(() => {
-    if (!currentEpoch || !connection) return;
-
-    const fetchEpochSlots = async () => {
+    const fetchEpochInfo = async () => {
       try {
         const epochInfo = await connection.getEpochInfo();
-        const schedule = await connection.getLeaderSchedule(null, {
-          epoch: currentEpoch,
-          commitment: 'confirmed'
-        });
-
-        setCurrentSlot(epochInfo.absoluteSlot);
-
-        if (!schedule) {
-          console.log('No schedule found for current epoch');
-          return;
-        }
-
-        const validatorSlots = schedule[validatorIdentityKey.toBase58()] || [];
-        const baseSlot = currentEpoch * epochInfo.slotsInEpoch;
+        const leaderSchedule = await connection.getLeaderSchedule(epochInfo.epoch);
+        setSlotsPerEpoch(epochInfo.slotsInEpoch);
+        setFirstSlotInEpoch(epochInfo.absoluteSlot - epochInfo.slotIndex);
         
-        // Create cumulative data points for completed slots
-        const completedData = validatorSlots.map((slot, index) => ({
-          x: baseSlot + slot,
-          y: index + 1
-        }));
-
-        // Update last processed slot
-        lastProcessedSlot.current = epochInfo.absoluteSlot;
-
-        // Update state with the new data
-        setEpochLeaderSlots(prev => ({
-          current: completedData,
-          total: validatorSlots.length
-        }));
-
+        if (leaderSchedule && leaderSchedule[validatorIdentityKey.toBase58()]) {
+          setEpochLeaderSlots(prev => ({
+            ...prev,
+            current: leaderSchedule[validatorIdentityKey.toBase58()]
+          }));
+        }
       } catch (error) {
-        console.error('Error processing epoch slots:', error);
+        console.error('Error fetching leader slots:', error);
       }
     };
 
-    fetchEpochSlots();
-    const interval = setInterval(fetchEpochSlots, 6000);
+    fetchEpochInfo();
+    const interval = setInterval(fetchEpochInfo, 60000);
     return () => clearInterval(interval);
-  }, [currentEpoch, connection, validatorIdentityKey]);
-
-  const chartData = {
-    datasets: [
-      {
-        label: 'Leader Slots',
-        data: epochLeaderSlots.current || [],
-        borderColor: '#D1FB0E',
-        backgroundColor: 'rgba(209, 251, 14, 0.1)',
-        fill: true,
-        stepped: false,
-        tension: 0.1,
-        borderWidth: 1.5,
-        pointRadius: 0,
-      }
-    ]
-  };
-
-  const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    animation: false,
-    plugins: {
-      legend: {
-        display: false
-      },
-      tooltip: {
-        enabled: true,
-        mode: 'index',
-        intersect: false,
-        backgroundColor: 'rgba(30, 32, 34, 0.9)',
-        titleColor: '#D1FB0E',
-        bodyColor: '#fff',
-        borderColor: '#D1FB0E',
-        borderWidth: 1,
-        padding: 8,
-        callbacks: {
-          label: function(context) {
-            return `Slot ${context.raw.x}`;
-          }
-        }
-      },
-      annotation: {
-        annotations: {
-          currentSlotLine: {
-            type: 'line',
-            xMin: currentSlot,
-            xMax: currentSlot,
-            borderColor: '#FFFFFF',
-            borderWidth: 1,
-            borderDash: [3, 3],
-            label: {
-              enabled: false
-            }
-          }
-        }
-      }
-    },
-    scales: {
-      x: {
-        type: 'linear',
-        display: false,
-        offset: false,
-        bounds: 'data'
-      },
-      y: {
-        display: false,
-        beginAtZero: true,
-        grid: {
-          display: false,
-        },
-        ticks: {
-          display: false,
-        }
-      }
-    }
-  };
+  }, [connection, validatorIdentityKey, setEpochLeaderSlots]);
 
   const totalSlots = epochLeaderSlots.current?.length || 0;
+  const chartData = epochLeaderSlots.current?.map((relativeSlot) => {
+    const absoluteSlot = firstSlotInEpoch + relativeSlot;
+    return {
+      name: relativeSlot,
+      value: relativeSlot,
+      absoluteSlot: absoluteSlot
+    };
+  }) || [];
+
+  const CustomTooltip = ({ active, payload }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="custom-tooltip">
+          <p className="tooltip-value">Slot {payload[0].payload.absoluteSlot}</p>
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <div className="dashboard-panel status-panel leader-slots-panel">
-      <h2>Leader Slots</h2>
+      <h2>LEADER SLOTS</h2>
       <div className="status-grid">
-        <div className="status-item">
-          <label>Total Slots</label>
-          <value>{totalSlots}</value>
+        <div className="status-value">
+          {totalSlots}
         </div>
         <div className="chart-wrapper">
-          <div className="chart-container" style={{ height: '60px' }}>
-            <Line data={chartData} options={chartOptions} />
+          <div className="chart-container">
+            <ResponsiveContainer width="100%" height={100}>
+              <AreaChart data={chartData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
+                <defs>
+                  <linearGradient id="colorSlot" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#D1FB0E" stopOpacity={0.2}/>
+                    <stop offset="95%" stopColor="#D1FB0E" stopOpacity={0.02}/>
+                  </linearGradient>
+                </defs>
+                <Tooltip content={<CustomTooltip />} />
+                <Area
+                  type="monotone"
+                  dataKey="value"
+                  stroke="#D1FB0E"
+                  strokeWidth={1.5}
+                  fill="url(#colorSlot)"
+                  isAnimationActive={false}
+                  dot={false}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
           </div>
         </div>
       </div>

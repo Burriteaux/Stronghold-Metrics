@@ -804,25 +804,28 @@
 }
 
 .leader-slots-panel {
-  margin-top: 0;
-}
-
-.leader-slots-panel .chart-wrapper {
-  grid-column: span 2;
-  width: 100%;
-  margin-top: 8px;
+  background-color: rgba(30, 32, 34, 0.5);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 10px;
+  width: 350px;
+  height: 200px;
+  box-sizing: border-box;
 }
 
 .leader-slots-panel .chart-container {
-  background: rgba(209, 251, 14, 0.05);
-  border-radius: 4px;
-  padding: 4px;
+  margin-top: 4px;
+  height: 100px;
 }
 
 .leader-slots-panel .status-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.leader-slots-panel .status-item {
+  margin-bottom: 4px;
 }
 
 .leader-slots-panel .chart-container canvas {
@@ -890,7 +893,7 @@
 }
 
 .metric-panel .chart-container {
-  background: rgba(209, 251, 14, 0.05);
+  background: rgba(251, 140, 14, 0);
   border-radius: 4px;
   padding: 4px;
   height: 80px !important;
@@ -1036,7 +1039,7 @@
   top: 50px;
   left: 45px;
   right: 0;
-  background: #191919;
+  background: #ffffff00;
   height: 50px;
   padding: 5px 0;
   z-index: 1000;
@@ -1354,18 +1357,6 @@
   margin-bottom: 12px;
 }
 
-/* Keep labels in regular weight */
-.status-item label {
-  font-family: "articulat-cf", sans-serif;
-  font-weight: 400;
-  font-style: normal;
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-  color: rgba(255, 255, 255, 0.5);
-  margin-bottom: 2px;
-}
-
 /* Update validator info header width */
 .validator-info-header {
   grid-area: header;
@@ -1446,15 +1437,6 @@
   animation: progressPulse 1s ease-in-out infinite;
 }
 
-.epoch-progress-text {
-  height: 50px;
-  display: flex;
-  align-items: center;
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 0.85rem;
-  white-space: nowrap;
-}
-
 /* Add these styles for the metric rings */
 .metric-rings-panel {
   margin-bottom: 15px;
@@ -1501,26 +1483,34 @@
 
 /* Add styles for stake history panel */
 .stake-history-panel {
-  margin-bottom: 15px;
+  background-color: rgba(30, 32, 34, 0.5);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 10px;
+  width: 350px;
+  box-sizing: border-box;
 }
 
-.stake-history-panel .chart-wrapper {
-  grid-column: span 2;
-  width: 100%;
-  margin-top: 8px;
+.stake-history-panel h2 {
+  font-size: 0.9rem;
+  font-weight: 900;
+  margin: 0 0 4px 0;
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .stake-history-panel .chart-container {
-  background: rgba(209, 251, 14, 0.05);
-  border-radius: 4px;
-  padding: 4px;
-  height: 80px !important;
+  margin-top: 4px;
+  height: 100px;
 }
 
-.change-percentage {
-  font-size: 0.75rem;
-  opacity: 0.7;
-  margin-left: 4px;
+.stake-history-panel .chart-wrapper {
+  width: 100%;
+}
+
+/* Style the x-axis text */
+.stake-history-panel .recharts-xaxis-tick-value {
+  fill: rgba(255, 255, 255, 0.5);
+  font-size: 10px;
 }
 
 /* Add these styles for the upcoming changes panel */
@@ -1547,7 +1537,7 @@
 }
 
 .upcoming-changes-panel .net-change value {
-  font-size: 1.1rem;
+  font-size: 1.3rem;
   font-weight: 900;
 }
 
@@ -2016,4 +2006,150 @@
 .metric-rings-container circle:first-child,
 .metric-rings-panel circle:first-child {
   stroke: rgba(209, 251, 14, 0.1);
+}
+
+.custom-tooltip {
+  background-color: rgba(30, 32, 34, 0.9);
+  border: 1px solid #D1FB0E;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+.custom-tooltip p {
+  margin: 0;
+  line-height: 1.2;
+}
+
+.tooltip-epoch {
+  color: #D1FB0E;
+  font-size: 11px;
+}
+
+.tooltip-value {
+  color: #FFFFFF;
+  font-size: 12px;
+  margin: 0;
+  line-height: 1;
+}
+
+/* Add these styles for the leader slots panel */
+.leader-slots-panel {
+  background-color: rgba(30, 32, 34, 0.5);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 10px;
+  width: 350px;
+  height: 170px;
+  box-sizing: border-box;
+}
+
+.leader-slots-panel .chart-container {
+  margin-top: -40px;
+  height: 120px;
+}
+
+/* Add flex layout to status grid */
+.leader-slots-panel .status-grid {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* Adjust spacing for value and label */
+.leader-slots-panel .status-item {
+  margin-bottom: 4px;
+}
+
+.leader-slots-panel .status-value {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin-bottom: 8px;
+  text-align: left;
+  padding-left: 8px;
+}
+
+.leader-slots-panel h2 {
+  font-family: "articulat-heavy-cf", sans-serif;
+  font-weight: 900;
+  font-style: normal;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 12px;
+}
+
+/* Add styles for vote success panel */
+.vote-success-panel {
+  background-color: rgba(30, 32, 34, 0.5);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 10px;
+  width: 350px;
+  height: 180px;
+  box-sizing: border-box;
+}
+
+.vote-success-panel .chart-container {
+  margin-top: 25px;
+  height: 80px;
+}
+
+.vote-success-panel .status-grid {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.vote-success-panel .status-item {
+  margin-bottom: 4px;
+}
+
+.vote-success-panel .panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.vote-success-panel .time-range-selector {
+  display: flex;
+  gap: 4px;
+}
+
+.vote-success-panel .time-range-button {
+  background: none;
+  border: 1px solid rgba(209, 251, 14, 0.2);
+  color: rgba(255, 255, 255, 0.5);
+  padding: 2px 6px;
+  font-size: 11px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.vote-success-panel .time-range-button:hover {
+  border-color: rgba(209, 251, 14, 0.4);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.vote-success-panel .time-range-button.active {
+  background: rgba(209, 251, 14, 0.1);
+  border-color: #D1FB0E;
+  color: #D1FB0E;
+}
+
+.metric-panel .status-item value {
+  display: block;
+  color: #ffffff;
+  font-size: 1.3rem;
+  font-weight: 600;
+  font-family: "articulat-heavy-cf", sans-serif;
+  letter-spacing: 0.02em;
+}
+
+.metric-panel .status-item {
+  margin-bottom: 4px;
 }

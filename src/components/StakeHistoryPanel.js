@@ -1,79 +1,27 @@
 import React from 'react';
-import { Line } from 'react-chartjs-2';
+import { AreaChart, Area, ResponsiveContainer, Tooltip, XAxis } from 'recharts';
 import { useStakeHistory } from '../hooks/useStakeHistory';
 
 const StakeHistoryPanel = () => {
   const { stakeHistory, loading, error } = useStakeHistory();
 
-  if (loading) return null;
-  if (error) return null;
+  if (loading || error) return null;
 
-  const displayData = [...stakeHistory].reverse();
+  const displayData = [...stakeHistory].reverse().map(item => ({
+    epoch: item.epoch,
+    value: item.stake
+  }));
 
-  const chartData = {
-    labels: displayData.map(item => item.epoch),
-    datasets: [{
-      label: 'Active Stake',
-      data: displayData.map(item => item.stake),
-      borderColor: '#D1FB0E',
-      backgroundColor: 'rgba(209, 251, 14, 0.1)',
-      fill: true,
-      tension: 0.2,
-      borderWidth: 1.5,
-      pointRadius: 0,
-    }]
-  };
-
-  const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    animation: false,
-    plugins: {
-      legend: {
-        display: false
-      },
-      tooltip: {
-        enabled: true,
-        mode: 'index',
-        intersect: false,
-        backgroundColor: 'rgba(30, 32, 34, 0.9)',
-        titleColor: '#D1FB0E',
-        bodyColor: '#fff',
-        borderColor: '#D1FB0E',
-        borderWidth: 1,
-        padding: 8,
-        callbacks: {
-          title: function(context) {
-            return `Epoch ${context[0].label}`;
-          },
-          label: function(context) {
-            return `${context.raw.toLocaleString()} SOL`;
-          }
-        }
-      }
-    },
-    scales: {
-      x: {
-        display: false,
-        grid: {
-          display: false
-        },
-        ticks: {
-          maxTicksLimit: 6,
-          callback: function(value) {
-            return `Epoch ${value}`;
-          }
-        }
-      },
-      y: {
-        display: false,
-        grid: {
-          display: false
-        },
-        min: Math.min(...displayData.map(item => item.stake)) * 0.95,
-        max: Math.max(...displayData.map(item => item.stake)) * 1.05
-      }
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="custom-tooltip">
+          <p className="tooltip-epoch">E{label}</p>
+          <p className="tooltip-value">{payload[0].value.toLocaleString()}</p>
+        </div>
+      );
     }
+    return null;
   };
 
   return (
@@ -81,7 +29,33 @@ const StakeHistoryPanel = () => {
       <h2>Active Stake</h2>
       <div className="chart-wrapper">
         <div className="chart-container">
-          <Line data={chartData} options={chartOptions} />
+          <ResponsiveContainer width="100%" height={120}>
+            <AreaChart data={displayData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
+              <defs>
+                <linearGradient id="colorStake" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#D1FB0E" stopOpacity={0.2}/>
+                  <stop offset="95%" stopColor="#D1FB0E" stopOpacity={0.02}/>
+                </linearGradient>
+              </defs>
+              <XAxis 
+                dataKey="epoch"
+                hide={true}
+              />
+              <Tooltip 
+                content={<CustomTooltip />}
+                wrapperStyle={{ fontSize: '12px' }}
+              />
+              <Area
+                type="monotone"
+                dataKey="value"
+                stroke="#D1FB0E"
+                strokeWidth={1.5}
+                fill="url(#colorStake)"
+                isAnimationActive={false}
+                dot={false}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
         </div>
       </div>
     </div>

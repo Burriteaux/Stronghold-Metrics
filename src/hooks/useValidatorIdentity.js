@@ -1,0 +1,1 @@
+export { useValidatorIdentity } from '../context/ValidatorIdentityContext'; 

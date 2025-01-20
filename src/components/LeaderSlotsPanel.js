@@ -1,9 +1,18 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Line } from 'react-chartjs-2';
 import { useLeaderHistory } from '../hooks/useLeaderHistory';
+import useLeaderSlots from '../hooks/useLeaderSlots';
 
-const LeaderSlotsPanel = () => {
-  const { data, loading, error, currentEpoch } = useLeaderHistory();
+const LeaderSlotsPanel = memo(({ 
+  currentEpoch,
+  epochLeaderSlots,
+  setEpochLeaderSlots,
+  connection,
+  validatorIdentityKey
+}) => {
+  const { data, loading, error } = useLeaderHistory();
+  const { leaderSlots } = useLeaderSlots();
+  console.log('Leader Slots from SVT:', leaderSlots);
 
   if (loading) return null;
   if (error) return null;
@@ -100,23 +109,12 @@ const LeaderSlotsPanel = () => {
     }
   };
 
-  // Calculate metrics
-  const totalSlots = data.slice(0, 3).reduce((sum, epoch) => sum + epoch.totalSlots, 0);
-  const currentEpochSlots = data[0]?.totalSlots || 0;
-
   return (
     <div className="dashboard-panel status-panel leader-slots-panel">
       <h2>LEADER SLOTS</h2>
       <div className="status-grid">
-        <div className="metrics-row">
-          <div className="status-item">
-            <label>TOTAL SLOTS</label>
-            <value>{totalSlots}</value>
-          </div>
-          <div className="status-item">
-            <label>CURRENT EPOCH</label>
-            <value>{currentEpochSlots}</value>
-          </div>
+        <div className="status-value">
+          {`${leaderSlots?.completed || 0}/${leaderSlots?.total || 0}`}
         </div>
         <div className="chart-wrapper">
           <div className="chart-container" style={{ height: '120px' }}>
@@ -126,6 +124,6 @@ const LeaderSlotsPanel = () => {
       </div>
     </div>
   );
-};
+});
 
 export default LeaderSlotsPanel; 

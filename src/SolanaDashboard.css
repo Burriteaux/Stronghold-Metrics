@@ -1262,7 +1262,7 @@
 
 /* Progress Text */
 .epoch-percentage,
-.epoch-time {
+.epoch-progress-percentage {
   font-family: "articulat-cf", sans-serif;
   font-weight: 400;
   font-size: 0.8rem;
@@ -2148,4 +2148,79 @@
 
 .metric-panel .status-item {
   margin-bottom: 4px;
+}
+
+/* Mobile responsiveness */
+@media screen and (max-width: 768px) {
+  .dashboard {
+    flex-direction: column;
+    padding: 10px;
+    height: 100vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch; /* For smooth scrolling on iOS */
+  }
+
+  .left-panels, .right-panels {
+    width: 100%;
+    padding: 0;
+  }
+
+  /* Hide the stronghold logo metric ring on mobile */
+  .stronghold-logo-container {
+    display: none;
+  }
+
+  /* Adjust panel heights for mobile */
+  .dashboard-panel {
+    min-height: auto;
+    height: auto;
+  }
+
+  /* Adjust metrics display for mobile */
+  .metrics-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .status-item {
+    margin-bottom: 8px;
+    width: 100%;
+  }
+
+  /* Adjust chart containers for mobile */
+  .chart-container {
+    height: 100px !important;
+  }
+
+  /* Adjust font sizes for mobile */
+  .dashboard-panel h2 {
+    font-size: 1.2rem;
+  }
+
+  .status-item value {
+    font-size: 1.4rem;
+  }
+
+  .status-item label {
+    font-size: 0.8rem;
+  }
+}
+
+/* Additional breakpoint for very small screens */
+@media screen and (max-width: 480px) {
+  .dashboard {
+    padding: 5px;
+  }
+
+  .dashboard-panel {
+    padding: 10px;
+  }
+
+  .dashboard-panel h2 {
+    font-size: 1rem;
+  }
+
+  .status-item value {
+    font-size: 1.2rem;
+  }
 }

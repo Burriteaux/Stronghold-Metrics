@@ -7,26 +7,15 @@ export const useLeaderSlots = () => {
 
   useEffect(() => {
     const fetchLeaderSlots = async () => {
-      if (!process.env.REACT_APP_SVT_API_URL) {
-        setError('SVT API URL is not configured');
-        setLoading(false);
-        return;
-      }
-
-      if (!process.env.REACT_APP_SVT_API_TOKEN) {
-        setError('SVT API Token is not configured');
-        setLoading(false);
-        return;
-      }
-
       try {
-        const url = `${process.env.REACT_APP_SVT_API_URL}/validators/${process.env.REACT_APP_VALIDATOR_VOTE}?network=mainnet&select=leaderSlotsEpoch%2CleaderSlotsDone`;
-        
-        const response = await fetch(url, {
-          headers: {
-            'Authorization': `Bearer ${process.env.REACT_APP_SVT_API_TOKEN}`
+        const response = await fetch(
+          `https://api.svt.one/validators/Ac1beBKixfNdrTAac7GRaTsJTxLyvgGvJjvy4qQfvyfc?network=mainnet&select=leaderSlotsEpoch%2CleaderSlotsDone`,
+          {
+            headers: {
+              'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImJ1cnJpdG9TdHJvbmdob2xkMjAwMTI1IiwiaWF0IjoxNzM3MzY3Mzg2LCJleHAiOjE4MjM3NjczODZ9.Xt5M9QL8reJE8-UycwWFoM2eDOmsAosfPOa4sQ0BJ-4'
+            }
           }
-        });
+        );
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -35,12 +24,9 @@ export const useLeaderSlots = () => {
         const data = await response.json();
         
         if (data && data.data && data.data[0]) {
-          const completed = data.data[0].leaderSlotsDone || 0;
-          const total = data.data[0].leaderSlotsEpoch || 0;
-          
           setLeaderSlots({
-            completed,
-            total
+            completed: data.data[0].leaderSlotsDone || 0,
+            total: data.data[0].leaderSlotsEpoch || 0
           });
         } else {
           throw new Error('Invalid API response format');

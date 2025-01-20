@@ -1,18 +1,11 @@
-import React, { memo } from 'react';
+import React from 'react';
 import { Line } from 'react-chartjs-2';
 import { useLeaderHistory } from '../hooks/useLeaderHistory';
 import useLeaderSlots from '../hooks/useLeaderSlots';
 
-const LeaderSlotsPanel = memo(({ 
-  currentEpoch,
-  epochLeaderSlots,
-  setEpochLeaderSlots,
-  connection,
-  validatorIdentityKey
-}) => {
-  const { data, loading, error } = useLeaderHistory();
+const LeaderSlotsPanel = () => {
+  const { data, loading, error, currentEpoch } = useLeaderHistory();
   const { leaderSlots } = useLeaderSlots();
-  console.log('Leader Slots from SVT:', leaderSlots);
 
   if (loading) return null;
   if (error) return null;
@@ -124,6 +117,6 @@ const LeaderSlotsPanel = memo(({
       </div>
     </div>
   );
-});
+};
 
 export default LeaderSlotsPanel; 

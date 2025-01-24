@@ -28,19 +28,19 @@ const StakewizMetrics = () => {
         <div className="status-item">
           <label>Status</label>
           <value className={validatorInfo?.delinquent ? 'error' : 'success'}>
-            Active
+            {validatorInfo?.delinquent ? 'Delinquent' : 'Active'}
           </value>
         </div>
         <div className="status-item">
           <label>Stake</label>
           <value style={{ color: '#D1FB0E' }}>
-            {(validatorInfo?.activated_stake || 0).toLocaleString()} SOL
+            {Math.round(validatorInfo?.activated_stake || 0).toLocaleString()} SOL
           </value>
         </div>
         <div className="status-item">
           <label>Last Vote</label>
           <value>
-            Slot {validatorInfo?.last_vote?.toLocaleString() || statusInfo?.slot || 'N/A'}
+            Slot {validatorInfo?.lastVote?.toLocaleString() || 'N/A'}
           </value>
         </div>
         <div className="status-item with-progress">

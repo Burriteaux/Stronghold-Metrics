@@ -4,9 +4,13 @@ const BASE_URL = 'https://api.stakewiz.com';
 
 export const useEpochInfo = () => {
   const [epochInfo, setEpochInfo] = useState({
+    currentEpoch: null,
     progress: 0,
     timeRemaining: 'N/A',
-    currentEpoch: null
+    startSlot: null,
+    slotHeight: null,
+    elapsedSeconds: 0,
+    remainingSeconds: 0
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -21,24 +25,28 @@ export const useEpochInfo = () => {
         }
 
         const data = await response.json();
-        console.log('Raw epoch info:', data);
-
-        // Calculate progress percentage
-        const progress = (data.seconds_elapsed / data.epoch_duration) * 100;
+        
+        // Ensure progress is calculated as a number
+        const progress = parseFloat(
+          ((data.elapsed_seconds / data.duration_seconds) * 100).toFixed(2)
+        );
         
         // Format time remaining
-        const hours = Math.floor(data.seconds_remaining / 3600);
-        const minutes = Math.floor((data.seconds_remaining % 3600) / 60);
-        const seconds = Math.floor(data.seconds_remaining % 60);
-        const timeRemaining = `${hours}h ${minutes}m ${seconds}s`;
+        const hours = Math.floor(data.remaining_seconds / 3600);
+        const minutes = Math.floor((data.remaining_seconds % 3600) / 60);
+        const timeRemaining = `${hours}h ${minutes}m`;
 
         setEpochInfo({
-          progress: progress.toFixed(2),
+          currentEpoch: data.epoch,
+          progress: progress,
           timeRemaining,
-          currentEpoch: data.epoch
+          startSlot: data.start_slot,
+          slotHeight: data.slot_height,
+          elapsedSeconds: data.elapsed_seconds,
+          remainingSeconds: data.remaining_seconds
         });
+        
         setError(null);
-
       } catch (err) {
         console.error('Epoch info fetch error:', err);
         setError(err.message);
@@ -48,8 +56,7 @@ export const useEpochInfo = () => {
     };
 
     fetchEpochInfo();
-    const interval = setInterval(fetchEpochInfo, 60000); // Update every minute
-
+    const interval = setInterval(fetchEpochInfo, 60000);
     return () => clearInterval(interval);
   }, []);
 

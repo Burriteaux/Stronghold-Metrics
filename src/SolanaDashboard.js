@@ -18,7 +18,6 @@ const connection = new Connection('https://mainnet.helius-rpc.com/?api-key=f0751
 function SolanaDashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
-  const [epochData, setEpochData] = useState({ progress: 0, info: null });
   const [validatorData, setValidatorData] = useState({ info: null, status: null });
   const [leaderSlotsCount, setLeaderSlotsCount] = useState(0);
   const [clusterTps, setClusterTps] = useState(0);
@@ -51,6 +50,8 @@ function SolanaDashboard() {
 
   const validatorIdentityKey = useMemo(() => new PublicKey('91oPXTs2oq8VvJpQ5TnvXakFGnnJSpEB6HFWDtSctwMt'), []);
   const validatorVoteKey = useMemo(() => new PublicKey('Ac1beBKixfNdrTAac7GRaTsJTxLyvgGvJjvy4qQfvyfc'), []);
+
+  const { epochInfo } = useEpochInfo();
 
   const updateValidatorInfo = useCallback((validator) => {
     setValidatorData(prev => ({
@@ -178,8 +179,6 @@ function SolanaDashboard() {
       const progress = (epoch.slotIndex / epoch.slotsInEpoch) * 100;
       const newProgress = Math.min(Math.max(progress, 0), 100).toFixed(2);
 
-      setEpochData(prev => ({ ...prev, info: epoch, progress: parseFloat(newProgress) }));
-
       if (parseFloat(newProgress) > lastFlashedProgress) {
         const epochProgressElement = epochProgressRef.current;
         if (epochProgressElement) {
@@ -240,8 +239,6 @@ function SolanaDashboard() {
 
   useEffect(() => {
     fetchMainData();
-    const interval = setInterval(fetchMainData, 10000);
-    return () => clearInterval(interval);
   }, [fetchMainData]);
 
   useEffect(() => {
@@ -260,10 +257,10 @@ function SolanaDashboard() {
       const circle = epochProgressRef.current.querySelector('.progress-ring__circle--progress');
       if (circle) {
         const circumference = 2 * Math.PI * 160;
-        circle.style.strokeDashoffset = `${circumference * (1 - epochData.progress / 100)}`;
+        circle.style.strokeDashoffset = `${circumference * (1 - epochInfo.progress / 100)}`;
       }
     }
-  }, [epochData.progress]);
+  }, [epochInfo.progress]);
 
   useEffect(() => {
     updateProgress();
@@ -273,8 +270,6 @@ function SolanaDashboard() {
     if (!initialLoadComplete) return;
     
     fetchClusterTPS();
-    const interval = setInterval(fetchClusterTPS, 3000);
-    return () => clearInterval(interval);
   }, [fetchClusterTPS, initialLoadComplete]);
 
   const fetchEpochLeaderSlots = useCallback(async (epochNumber) => {
@@ -416,7 +411,7 @@ function SolanaDashboard() {
       // Handle vote accounts data
     }
     if (data.epochInfo) {
-      setEpochData(prev => ({ ...prev, info: data.epochInfo }));
+      // Handle epoch info data
     }
   };
 
@@ -482,13 +477,13 @@ function SolanaDashboard() {
           <img src={logo} alt="Stronghold Logo" />
         </a>
       </header>
-      <EpochProgressBar progress={epochData.progress} />
+      <EpochProgressBar />
       <div className="dashboard-grid">
         <ValidatorInfo />
         <div className="left-panels">
           <StakewizMetrics />
           <LeaderSlotsPanel 
-            currentEpoch={epochData.info?.epoch}
+            currentEpoch={epochInfo.epoch}
             epochLeaderSlots={epochLeaderSlots}
             setEpochLeaderSlots={setEpochLeaderSlots}
             connection={connection}
@@ -649,8 +644,6 @@ const LeaderSlotsPanel = memo(({
     };
 
     fetchEpochInfo();
-    const interval = setInterval(fetchEpochInfo, 60000);
-    return () => clearInterval(interval);
   }, [connection, validatorIdentityKey, setEpochLeaderSlots]);
 
   const totalSlots = epochLeaderSlots.current?.length || 0;
@@ -710,7 +703,7 @@ const LeaderSlotsPanel = memo(({
   );
 });
 
-const EpochProgressBar = memo(({ progress }) => {
+const EpochProgressBar = memo(() => {
   const { epochInfo } = useEpochInfo();
 
   return (
@@ -721,11 +714,11 @@ const EpochProgressBar = memo(({ progress }) => {
       <div className="epoch-progress-bar">
         <div 
           className="epoch-progress-bar-fill" 
-          style={{ width: `${progress}%` }}
+          style={{ width: `${epochInfo?.progress}%` }}
         />
       </div>
       <div className="epoch-progress-text">
-        {progress.toFixed(2)}% Complete
+        {epochInfo?.progress.toFixed(2)}% Complete
       </div>
     </div>
   );

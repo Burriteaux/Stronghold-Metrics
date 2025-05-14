@@ -1,11 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Connection, PublicKey } from '@solana/web3.js';
 
 const VOTE_PUBKEY = 'Ac1beBKixfNdrTAac7GRaTsJTxLyvgGvJjvy4qQfvyfc';
 const IDENTITY_PUBKEY = '91oPXTs2oq8VvJpQ5TnvXakFGnnJSpEB6HFWDtSctwMt';
-const connection = new Connection('https://mainnet.helius-rpc.com/?api-key=f0751d28-271a-4b42-a667-3333a6c49d7c');
+const connection = new Connection(process.env.REACT_APP_HELIUS_RPC_URL);
 
-export const useValidatorStatus = () => {
+export const useValidatorStatus = (options) => {
+  const { onNextLeaderSlotReached } = options || {};
+
   const [statusInfo, setStatusInfo] = useState({
     slot: 'N/A',
     next_leader_slot: 'N/A',
@@ -17,6 +19,14 @@ export const useValidatorStatus = () => {
   const [currentSlot, setCurrentSlot] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [lastNotifiedReachedSlot, setLastNotifiedReachedSlot] = useState(null);
+
+  const calculateTimeUntil = useCallback((currentSlotCalc, targetSlot) => {
+    const timeUntilSeconds = (targetSlot - currentSlotCalc) * 0.4;
+    const minutes = Math.floor(timeUntilSeconds / 60);
+    const seconds = Math.floor(timeUntilSeconds % 60);
+    return `${minutes}mins:${seconds.toString().padStart(2, '0')}sec`;
+  }, []);
 
   // Effect for fetching data every 10 seconds
   useEffect(() => {
@@ -53,6 +63,18 @@ export const useValidatorStatus = () => {
         if (allLeaderSlots.length > 0) {
           nextSlot = allLeaderSlots.find(s => s > slot);
           previousSlot = [...allLeaderSlots].reverse().find(s => s <= slot);
+        }
+
+        // If the authoritative nextSlot has changed significantly from what we thought was the next, 
+        // or if the current nextSlot is very different from the last one we notified about, reset the notification lock.
+        if (nextSlot && nextLeaderData?.nextLeaderSlot && Math.abs(nextSlot - nextLeaderData.nextLeaderSlot) > 10) {
+            // Or more simply: if the new authoritative nextSlot is different from what we last notified for.
+            if (lastNotifiedReachedSlot && nextSlot !== lastNotifiedReachedSlot) {
+                 setLastNotifiedReachedSlot(null); // Allow re-notification if the target slot itself changes
+            }
+        } else if (!nextSlot && lastNotifiedReachedSlot) {
+            // If there's no upcoming slot from the authoritative source, clear the lock.
+            setLastNotifiedReachedSlot(null);
         }
 
         // Calculate progress percentage
@@ -95,20 +117,19 @@ export const useValidatorStatus = () => {
     };
 
     fetchStatusData();
-    const fetchInterval = setInterval(fetchStatusData, 10000);
+    const fetchInterval = setInterval(fetchStatusData, 30000);
 
     return () => clearInterval(fetchInterval);
-  }, []);
+  }, [nextLeaderData, calculateTimeUntil]);
 
   // Effect for updating countdown and progress every second
   useEffect(() => {
     const updateCountdown = () => {
       if (nextLeaderData) {
-        const { currentSlot, nextLeaderSlot, previousLeaderSlot, fetchTime } = nextLeaderData;
+        const { currentSlot: fetchedCurrentSlot, nextLeaderSlot, previousLeaderSlot, fetchTime } = nextLeaderData;
         const elapsedSeconds = (Date.now() - fetchTime) / 1000;
-        const newCurrentSlot = currentSlot + (elapsedSeconds / 0.4); // 0.4s per slot
+        const newCurrentSlot = fetchedCurrentSlot + (elapsedSeconds / 0.4); // 0.4s per slot
         
-        // Calculate new progress
         const totalDistance = nextLeaderSlot - previousLeaderSlot;
         const currentDistance = newCurrentSlot - previousLeaderSlot;
         const progress = Math.min(100, Math.max(0, (currentDistance / totalDistance) * 100));
@@ -118,20 +139,21 @@ export const useValidatorStatus = () => {
           time_until_leader: calculateTimeUntil(newCurrentSlot, nextLeaderSlot),
           leaderProgress: progress
         }));
+
+        // Check if leader slot reached and notify
+        if (newCurrentSlot >= nextLeaderSlot) {
+          if (onNextLeaderSlotReached && nextLeaderSlot !== lastNotifiedReachedSlot) {
+            onNextLeaderSlotReached(nextLeaderSlot);
+            setLastNotifiedReachedSlot(nextLeaderSlot);
+          }
+        }
       }
     };
 
     const countdownInterval = setInterval(updateCountdown, 1000);
 
     return () => clearInterval(countdownInterval);
-  }, [nextLeaderData]);
-
-  const calculateTimeUntil = (currentSlot, targetSlot) => {
-    const timeUntilSeconds = (targetSlot - currentSlot) * 0.4;
-    const minutes = Math.floor(timeUntilSeconds / 60);
-    const seconds = Math.floor(timeUntilSeconds % 60);
-    return `${minutes}mins:${seconds.toString().padStart(2, '0')}sec`;
-  };
+  }, [nextLeaderData, onNextLeaderSlotReached, lastNotifiedReachedSlot, calculateTimeUntil]);
 
   return {
     statusInfo,

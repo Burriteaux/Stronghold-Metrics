@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Connection, PublicKey } from '@solana/web3.js';
 
-const connection = new Connection('https://mainnet.helius-rpc.com/?api-key=f0751d28-271a-4b42-a667-3333a6c49d7c');
+const connection = new Connection(process.env.REACT_APP_HELIUS_RPC_URL);
 
 const useVoteAccountBalance = (voteAccountPubkey) => {
   const [balanceHistory, setBalanceHistory] = useState([]);

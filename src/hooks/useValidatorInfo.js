@@ -32,7 +32,7 @@ export const useValidatorInfo = () => {
           identity: data.identity || '91oPXTs2oq8VvJpQ5TnvXakFGnnJSpEB6HFWDtSctwMt',
           name: data.name || 'Stronghold 3% +MEV',
           version: data.version || '2.0.16',
-          commission: data.commission || 3,
+          commission: data.commission ?? 3,
           apy_estimate: baseApy,
           mev_apy: mevApy
         });

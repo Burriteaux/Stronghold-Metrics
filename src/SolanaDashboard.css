@@ -619,11 +619,10 @@
   bottom: 0;
   border-radius: 12px;
   padding: 1px;
-  background: linear-gradient(to left, 
-    rgba(255, 255, 255, 0.35) 0%, 
-    rgba(255, 255, 255, 0.25) 50%, 
-    rgba(255, 255, 255, 0.35) 100%);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  background: rgba(62, 66, 70, 0.6);
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   pointer-events: none;
@@ -809,7 +808,7 @@
   padding: 12px;
   margin-bottom: 10px;
   width: 350px;
-  height: 200px;
+  height: auto;
   box-sizing: border-box;
 }
 
@@ -821,7 +820,7 @@
 .leader-slots-panel .status-grid {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: auto;
 }
 
 .leader-slots-panel .status-item {
@@ -1277,6 +1276,14 @@
   font-size: 0.9rem;
 }
 
+/* Added style for stake value */
+.stake-history-panel .status-item .stake-value-styling {
+  font-family: "articulat-heavy-cf", sans-serif;
+  font-weight: 900;
+  color: #FFFFFF;
+  font-size: 1.4rem;
+}
+
 /* Highlight Values */
 .apy-value,
 .next-leader-value,
@@ -1295,7 +1302,6 @@
 .last-vote-slot,
 .next-leader-slot,
 .epoch-slot,
-.tps-value,
 .stake-amount {
   font-family: "articulat-heavy-cf", sans-serif;
   font-weight: 900;
@@ -1325,7 +1331,6 @@
 .status-value.active,
 .epoch-number,
 .pubkey,
-.tps-value,
 .vote-success-value {
   font-family: "articulat-heavy-cf", sans-serif;
   font-weight: 900;
@@ -1437,6 +1442,39 @@
   animation: progressPulse 1s ease-in-out infinite;
 }
 
+/* New pulsing animations for status indicator */
+@keyframes statusPulseActive {
+  0% { opacity: 1; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+@keyframes statusPulseDelinquent {
+  0% { opacity: 1; }
+  50% { opacity: 0.4; }
+  100% { opacity: 1; }
+}
+
+/* Styles for the status indicator circle */
+.status-indicator-circle {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 8px;
+  vertical-align: middle; /* Align with text */
+}
+
+.status-indicator-circle.status-active {
+  background-color: #D1FB0E; /* Green */
+  animation: statusPulseActive 1.2s ease-in-out infinite;
+}
+
+.status-indicator-circle.status-delinquent {
+  background-color: #ff6b6b; /* Red */
+  animation: statusPulseDelinquent 0.7s ease-in-out infinite;
+}
+
 /* Add these styles for the metric rings */
 .metric-rings-panel {
   margin-bottom: 15px;
@@ -1500,7 +1538,7 @@
 
 .stake-history-panel .chart-container {
   margin-top: 4px;
-  height: 100px;
+  height: 90px;
 }
 
 .stake-history-panel .chart-wrapper {
@@ -1550,14 +1588,7 @@
 }
 
 .upcoming-changes-panel .deactivating {
-  color: #000000;
-  -webkit-text-stroke: 0.5px #D1FB0E;
-  text-stroke: 0.5px #D1FB0E;
-  text-shadow: 
-    -0.25px -0.25px 0 #D1FB0E,
-    0.25px -0.25px 0 #D1FB0E,
-    -0.25px 0.25px 0 #D1FB0E,
-    0.25px 0.25px 0 #D1FB0E;
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .metric-ring-container {
@@ -1727,7 +1758,7 @@
   }
   
   .epoch-number {
-    font-size: 1rem;
+    font-size: 1.2rem;
   }
   
   .epoch-progress-text {
@@ -1897,272 +1928,37 @@
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .solana-dashboard {
-    padding-top: 250px;
-  }
-  
-  .bento-grid {
-    margin-top: 100px;
-    gap: 8px;
-    padding: 0 8px;
-  }
-}
-
-@media (max-width: 480px) {
-  .solana-dashboard {
-    padding-top: 200px;
-  }
-  
-  .bento-grid {
-    margin-top: 80px;
-    gap: 8px;
-    padding: 0 8px;
-  }
-}
-
-/* Update header link styles */
-.app-header a {
-  display: flex;
-  align-items: center;
-  height: 100%;
-  text-decoration: none;
-  color: inherit;
-}
-
-.app-header a:hover {
-  opacity: 0.9;
-}
-
-.app-header img {
-  height: 35px;
-  width: auto;
-  transition: transform 0.2s ease;
-}
-
-.app-header a:hover img {
-  transform: scale(1.05);
-}
-
-/* Update metric rings styles */
-.metric-rings-container .metric-value {
-  font-size: 0.9rem;
-  font-weight: 900;
-  color: #FFFFFF;
-  line-height: 1;
-}
-
-.metric-rings-container .metric-name {
-  font-size: 0.6rem;
-  color: rgba(255, 255, 255, 0.5);
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-  line-height: 1;
-}
-
-/* Make sure the rings stay green */
-.metric-ring circle {
-  stroke: #D1FB0E;
-}
-
-/* Keep the ring background color */
-.metric-ring circle:first-child {
-  stroke: rgba(209, 251, 14, 0.1);
-}
-
-/* Update metric rings value color */
-.metric-rings-container .metric-value,
-.metric-rings-container value,
-.metric-rings-panel value {
-  font-size: 0.9rem;
-  font-weight: 900;
-  color: #FFFFFF !important; /* Force white color */
-  line-height: 1;
-}
-
-/* Keep the metric name/label color dimmed */
-.metric-rings-container .metric-name,
-.metric-rings-container label,
-.metric-rings-panel label {
-  font-size: 0.6rem;
-  color: rgba(255, 255, 255, 0.5);
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-  line-height: 1;
-}
-
-/* Ensure the rings stay green */
-.metric-rings-container circle,
-.metric-rings-panel circle {
-  stroke: #D1FB0E;
-}
-
-/* Keep ring background color */
-.metric-rings-container circle:first-child,
-.metric-rings-panel circle:first-child {
-  stroke: rgba(209, 251, 14, 0.1);
-}
-
-.custom-tooltip {
-  background-color: rgba(30, 32, 34, 0.9);
-  border: 1px solid #D1FB0E;
-  border-radius: 4px;
-  padding: 4px 8px;
-  font-size: 12px;
-}
-
-.custom-tooltip p {
-  margin: 0;
-  line-height: 1.2;
-}
-
-.tooltip-epoch {
-  color: #D1FB0E;
-  font-size: 11px;
-}
-
-.tooltip-value {
-  color: #FFFFFF;
-  font-size: 12px;
-  margin: 0;
-  line-height: 1;
-}
-
-/* Add these styles for the leader slots panel */
-.leader-slots-panel {
-  background-color: rgba(30, 32, 34, 0.5);
-  border-radius: 12px;
-  padding: 12px;
-  margin-bottom: 10px;
-  width: 350px;
-  height: 170px;
-  box-sizing: border-box;
-}
-
-.leader-slots-panel .chart-container {
-  margin-top: -40px;
-  height: 120px;
-}
-
-/* Add flex layout to status grid */
-.leader-slots-panel .status-grid {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-/* Adjust spacing for value and label */
-.leader-slots-panel .status-item {
-  margin-bottom: 4px;
-}
-
-.leader-slots-panel .status-value {
-  font-size: 1.4rem;
-  font-weight: 600;
-  color: #FFFFFF;
-  margin-bottom: 8px;
-  text-align: left;
-  padding-left: 8px;
-}
-
-.leader-slots-panel h2 {
-  font-family: "articulat-heavy-cf", sans-serif;
-  font-weight: 900;
-  font-style: normal;
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: rgba(255, 255, 255, 0.7);
-  margin-bottom: 12px;
-}
-
-/* Add styles for vote success panel */
-.vote-success-panel {
-  background-color: rgba(30, 32, 34, 0.5);
-  border-radius: 12px;
-  padding: 12px;
-  margin-bottom: 10px;
-  width: 350px;
-  height: 180px;
-  box-sizing: border-box;
-}
-
-.vote-success-panel .chart-container {
-  margin-top: 25px;
-  height: 80px;
-}
-
-.vote-success-panel .status-grid {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-.vote-success-panel .status-item {
-  margin-bottom: 4px;
-}
-
-.vote-success-panel .panel-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.vote-success-panel .time-range-selector {
-  display: flex;
-  gap: 4px;
-}
-
-.vote-success-panel .time-range-button {
-  background: none;
-  border: 1px solid rgba(209, 251, 14, 0.2);
-  color: rgba(255, 255, 255, 0.5);
-  padding: 2px 6px;
-  font-size: 11px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.vote-success-panel .time-range-button:hover {
-  border-color: rgba(209, 251, 14, 0.4);
-  color: rgba(255, 255, 255, 0.8);
-}
-
-.vote-success-panel .time-range-button.active {
-  background: rgba(209, 251, 14, 0.1);
-  border-color: #D1FB0E;
-  color: #D1FB0E;
-}
-
-.metric-panel .status-item value {
-  display: block;
-  color: #ffffff;
-  font-size: 1.3rem;
-  font-weight: 600;
-  font-family: "articulat-heavy-cf", sans-serif;
-  letter-spacing: 0.02em;
-}
-
-.metric-panel .status-item {
-  margin-bottom: 4px;
-}
-
 /* Mobile responsiveness */
 @media screen and (max-width: 768px) {
-  .dashboard {
+  .solana-dashboard {
     flex-direction: column;
-    padding: 10px;
+    padding: 10px 0;
+    margin: 0;
+    width: 100%;
+    box-sizing: border-box;
     height: 100vh;
     overflow-y: auto;
-    -webkit-overflow-scrolling: touch; /* For smooth scrolling on iOS */
+    -webkit-overflow-scrolling: touch;
   }
 
   .left-panels, .right-panels {
     width: 100%;
     padding: 0;
+    box-sizing: border-box;
+  }
+
+  .dashboard-grid {
+    width: 90%;
+    margin-left: 2%;
+    margin-right: 15%;
+    margin-top: 80px;
+    margin-bottom: 0;
+    grid-template-columns: 1fr !important;
+    grid-template-areas:
+      "right"
+      "left"
+      !important;
+    justify-items: stretch !important;
   }
 
   /* Hide the stronghold logo metric ring on mobile */
@@ -2174,6 +1970,31 @@
   .dashboard-panel {
     min-height: auto;
     height: auto;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .leader-slots-panel,
+  .stake-history-panel,
+  .metric-panel {
+    width: 100% !important;
+    height: auto !important;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  /* Restore text styles within Leader Slots panel */
+  .leader-slots-panel .status-item .status-value,
+  .leader-slots-panel .status-item .status-value {
+    font-size: 1.2rem !important;
+    color: #FFFFFF !important;
+    font-family: "articulat-heavy-cf", sans-serif !important;
+    font-weight: 900 !important;
+  }
+
+  /* Prevent the first status-item in the leader-slots-panel's first row from taking full width */
+  .leader-slots-panel .status-grid > div:first-child > .status-item {
+    width: auto !important; /* Override general .status-item width: 100% */
   }
 
   /* Adjust metrics display for mobile */
@@ -2198,7 +2019,7 @@
   }
 
   .status-item value {
-    font-size: 1.4rem;
+    font-size: 1.2rem;
   }
 
   .status-item label {
@@ -2208,8 +2029,11 @@
 
 /* Additional breakpoint for very small screens */
 @media screen and (max-width: 480px) {
-  .dashboard {
-    padding: 5px;
+  .solana-dashboard {
+    padding: 5px 0;
+    margin: 0;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .dashboard-panel {
@@ -2223,4 +2047,25 @@
   .status-item value {
     font-size: 1.2rem;
   }
+}
+
+/* Added style for leader slots panel numbers on desktop */
+.leader-slots-panel .status-item .status-value {
+  color: #FFFFFF; /* Changed from #D1FB0E to #FFFFFF (white) */
+  font-family: "articulat-heavy-cf", sans-serif;
+  font-weight: 900;
+  font-size: 1.4rem; /* Added to match Epoch and Active Stake numbers */
+}
+
+/* Styles for Vote Success Panel chart container */
+.vote-success-panel .chart-wrapper {
+  margin-top: 0; /* Explicitly remove any top margin if inherited */
+}
+
+.vote-success-panel .chart-container {
+  height: 80px; /* Match the ResponsiveContainer height */
+  min-height: 80px; /* Ensure it doesn't shrink further */
+  margin-top: 0; /* Remove generic chart-container margin */
+  margin-bottom: 0; /* Remove generic chart-container margin */
+  padding: 0; /* Remove any padding if not desired, or set to small value e.g., 4px like .metric-panel */
 }

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Connection } from '@solana/web3.js';
 
 const IDENTITY_PUBKEY = '91oPXTs2oq8VvJpQ5TnvXakFGnnJSpEB6HFWDtSctwMt';
-const connection = new Connection('https://mainnet.helius-rpc.com/?api-key=f0751d28-271a-4b42-a667-3333a6c49d7c');
+const connection = new Connection(process.env.REACT_APP_HELIUS_RPC_URL);
 
 export const useLeaderHistory = () => {
   const [data, setData] = useState([]);

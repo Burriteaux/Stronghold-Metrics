@@ -17,27 +17,6 @@ export const useStakewizData = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Separate fetch function for last vote only
-  const fetchLastVote = async () => {
-    try {
-      const response = await fetch(`${BASE_URL}/validator/${VOTE_PUBKEY}`);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      
-      // Only update the lastVote field
-      setValidatorInfo(prev => ({
-        ...prev,
-        lastVote: data.last_vote
-      }));
-    } catch (err) {
-      console.error('Last vote fetch error:', err);
-    }
-  };
-
   // Main data fetch function
   const fetchAllData = async () => {
     try {
@@ -66,23 +45,19 @@ export const useStakewizData = () => {
       console.error('Stakewiz fetch error:', err);
       setError(err.message);
     } finally {
-      setLoading(false);
+      // Set loading to false only after the first successful fetch of all data.
+      if (loading) {
+        setLoading(false);
+      }
     }
   };
-
-  // Effect for frequent last vote updates
-  useEffect(() => {
-    fetchLastVote(); // Initial fetch
-    const lastVoteInterval = setInterval(fetchLastVote, 3000); // Update every 3 seconds
-    return () => clearInterval(lastVoteInterval);
-  }, []);
 
   // Effect for less frequent full data updates
   useEffect(() => {
     fetchAllData(); // Initial fetch
     const fullDataInterval = setInterval(fetchAllData, 300000); // Update every 5 minutes
     return () => clearInterval(fullDataInterval);
-  }, []);
+  }, []); // Removed fetchAllData from dependency array as it's stable
 
   return {
     validatorInfo,

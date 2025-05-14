@@ -13,17 +13,13 @@ const EpochProgressBar = () => {
   return (
     <div className="epoch-progress-bar-container">
       <div className="epoch-info">
-        <span className="epoch-number">Epoch {epochInfo.currentEpoch}</span>
-        <span className="epoch-time-remaining">{epochInfo.timeRemaining} remaining</span>
+        <span className="epoch-number">{epochInfo.currentEpoch}</span>
       </div>
       <div className="epoch-progress-bar">
         <div 
           className="epoch-progress-bar-fill"
           style={{ width: `${progress}%` }}
         />
-      </div>
-      <div className="epoch-progress-text">
-        {progress.toFixed(2)}% Complete
       </div>
     </div>
   );

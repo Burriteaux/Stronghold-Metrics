@@ -3,7 +3,6 @@ import { Connection, PublicKey } from '@solana/web3.js';
 import strongholdLogo from './stronghold-vector.svg';
 import './SolanaDashboard.css';
 import { AreaChart, Area, ResponsiveContainer, Tooltip } from 'recharts';
-import StakewizMetrics from './components/StakewizMetrics';
 import ValidatorInfo from './components/ValidatorInfo';
 import logo from './stronghold-logo.svg';
 import StakeHistoryPanel from './components/StakeHistoryPanel';
@@ -13,16 +12,17 @@ import VoteSuccessPanel from './components/VoteSuccessPanel';
 import LoadingOverlay from './components/LoadingOverlay';
 import { useLoadingState } from './hooks/useLoadingState';
 import { useLeaderSlots } from './hooks/useLeaderSlots';
-const connection = new Connection('https://mainnet.helius-rpc.com/?api-key=f0751d28-271a-4b42-a667-3333a6c49d7c');
+import { useValidatorStatus } from './hooks/useValidatorStatus';
+import EpochProgressBar from './components/EpochProgressBar';
+import MetricRings from './components/MetricRings';
+const connection = new Connection(process.env.REACT_APP_HELIUS_RPC_URL);
 
 function SolanaDashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
   const [validatorData, setValidatorData] = useState({ info: null, status: null });
   const [leaderSlotsCount, setLeaderSlotsCount] = useState(0);
-  const [clusterTps, setClusterTps] = useState(0);
   const [votePercentage, setVotePercentage] = useState(100);
-  const [tpsHistory, setTpsHistory] = useState(Array(20).fill(null));
   const [voteHistory, setVoteHistory] = useState(Array(20).fill(null));
   const [leaderHistory, setLeaderHistory] = useState(Array(30).fill(0));
   const [stakeHistory, setStakeHistory] = useState(Array(20).fill(null));
@@ -79,35 +79,17 @@ function SolanaDashboard() {
     const totalSlots = epochInfo.slotsInEpoch;
     setSlotsInEpoch(totalSlots);
     setStartSlot(epochInfo.absoluteSlot - epochInfo.slotIndex);
-    
-    if (tpsHistory.length === 0) {
-      setTpsHistory(new Array(totalSlots).fill(null));
+
+    if (voteHistory.length === 0) { 
       setVoteHistory(new Array(totalSlots).fill(null));
+    }
+    if (leaderHistory.length === 0) {
       setLeaderHistory(new Array(totalSlots).fill(null));
+    }
+    if (stakeHistory.length === 0) {
       setStakeHistory(new Array(totalSlots).fill(null));
     }
-  }, [tpsHistory.length]);
-
-  const fetchClusterTPS = useCallback(async () => {
-    try {
-      const performance = await connection.getRecentPerformanceSamples(1);
-      if (performance && performance.length > 0) {
-        const latestSample = performance[0];
-        const tps = Math.round(
-          (latestSample.numTransactions) / latestSample.samplePeriodSecs
-        );
-        
-        setTpsHistory(prev => {
-          const newHistory = [...prev.slice(1), tps];
-          console.log('TPS History:', newHistory);
-          return newHistory;
-        });
-        setClusterTps(tps);
-      }
-    } catch (error) {
-      console.error('Error fetching TPS:', error);
-    }
-  }, [connection]);
+  }, [voteHistory.length, leaderHistory.length, stakeHistory.length]);
 
   const calculateVotePercentage = useCallback((validator) => {
     if (!validator) return 100;
@@ -269,8 +251,7 @@ function SolanaDashboard() {
   useEffect(() => {
     if (!initialLoadComplete) return;
     
-    fetchClusterTPS();
-  }, [fetchClusterTPS, initialLoadComplete]);
+  }, [initialLoadComplete]);
 
   const fetchEpochLeaderSlots = useCallback(async (epochNumber) => {
     try {
@@ -442,33 +423,6 @@ function SolanaDashboard() {
     loadData();
   }, []);
 
-  const fetchTpsData = useCallback(async () => {
-    try {
-      const performance = await connection.getRecentPerformanceSamples(1);
-      if (performance && performance.length > 0) {
-        const currentTps = Math.round(
-          (performance[0].numTransactions / performance[0].samplePeriodSecs)
-        );
-        
-        setClusterTps(currentTps);
-        setTpsHistory(prev => {
-          const newHistory = [...prev.slice(1), currentTps];
-          return newHistory;
-        });
-      }
-    } catch (error) {
-      console.error('Error fetching TPS data:', error);
-    }
-  }, [connection]);
-
-  useEffect(() => {
-    if (initialLoadComplete) {
-      fetchTpsData();
-      const interval = setInterval(fetchTpsData, 10000); // Update every 10 seconds
-      return () => clearInterval(interval);
-    }
-  }, [initialLoadComplete, fetchTpsData]);
-
   return (
     <div className="solana-dashboard">
       <LoadingOverlay isLoading={isLoading} />
@@ -481,14 +435,7 @@ function SolanaDashboard() {
       <div className="dashboard-grid">
         <ValidatorInfo />
         <div className="left-panels">
-          <StakewizMetrics />
-          <LeaderSlotsPanel 
-            currentEpoch={epochInfo.epoch}
-            epochLeaderSlots={epochLeaderSlots}
-            setEpochLeaderSlots={setEpochLeaderSlots}
-            connection={connection}
-            validatorIdentityKey={validatorIdentityKey}
-          />
+          <LeaderSlotsPanel />
           <VoteSuccessPanel />
         </div>
         <div className="main-feature">
@@ -528,13 +475,6 @@ function SolanaDashboard() {
         <div className="right-panels">
           <StakeHistoryPanel />
           <UpcomingStakeChangesPanel />
-          <MetricPanel 
-            label="Cluster TPS" 
-            value={clusterTps || "0"} 
-            unit="TPS"
-            data={tpsHistory}
-            isTPS={true}
-          />
         </div>
       </div>
     </div>
@@ -613,112 +553,83 @@ const EpochInfoItem = memo(({ label, value }) => (
   </div>
 ));
 
-const LeaderSlotsPanel = memo(({ 
-  currentEpoch,
-  epochLeaderSlots,
-  setEpochLeaderSlots,
-  connection,
-  validatorIdentityKey
-}) => {
-  const [slotsPerEpoch, setSlotsPerEpoch] = useState(432000);
-  const [firstSlotInEpoch, setFirstSlotInEpoch] = useState(0);
-  const { leaderSlots } = useLeaderSlots();
+const LeaderSlotsPanel = memo(() => {
+  const { leaderSlots, loading: leaderSlotsLoading, error: leaderSlotsError } = useLeaderSlots();
+  
+  const { statusInfo, loading: statusInfoLoading, error: statusInfoError } = useValidatorStatus({ 
+    /* onNextLeaderSlotReached: handleNextLeaderSlotReached  // This line is removed */
+  });
 
-  useEffect(() => {
-    const fetchEpochInfo = async () => {
-      try {
-        const epochInfo = await connection.getEpochInfo();
-        const leaderSchedule = await connection.getLeaderSchedule(epochInfo.epoch);
-        setSlotsPerEpoch(epochInfo.slotsInEpoch);
-        setFirstSlotInEpoch(epochInfo.absoluteSlot - epochInfo.slotIndex);
-        
-        if (leaderSchedule && leaderSchedule[validatorIdentityKey.toBase58()]) {
-          setEpochLeaderSlots(prev => ({
-            ...prev,
-            current: leaderSchedule[validatorIdentityKey.toBase58()]
-          }));
-        }
-      } catch (error) {
-        console.error('Error fetching leader slots:', error);
-      }
-    };
+  // Loading and error handling for both hooks
+  if (leaderSlotsLoading && !leaderSlots) { // Only show initial loading for leader slots
+    // Potentially return a specific loading indicator for this panel or part of it
+    // For now, consistent with previous, null if initial leaderSlots not loaded
+    return null; 
+  }
+  if (statusInfoLoading && !statusInfo.slot) { // Similar for statusInfo if needed
+    // return null; // Or a combined loading state
+  }
 
-    fetchEpochInfo();
-  }, [connection, validatorIdentityKey, setEpochLeaderSlots]);
+  if (leaderSlotsError) {
+    console.error('LeaderSlotsPanel: Error fetching leader slots:', leaderSlotsError);
+    // Optionally render an error message for leader slots part
+  }
+  if (statusInfoError) {
+    console.error('LeaderSlotsPanel: Error fetching validator status:', statusInfoError);
+    // Optionally render an error message for status info part
+  }
+  
+  const leaderSlotsProgressPercentage =
+    leaderSlots && leaderSlots.total > 0
+      ? (leaderSlots.completed / leaderSlots.total) * 100
+      : 0;
 
-  const totalSlots = epochLeaderSlots.current?.length || 0;
-  const chartData = epochLeaderSlots.current?.map((relativeSlot) => {
-    const absoluteSlot = firstSlotInEpoch + relativeSlot;
-    return {
-      name: relativeSlot,
-      value: relativeSlot,
-      absoluteSlot: absoluteSlot
-    };
-  }) || [];
-
-  const CustomTooltip = ({ active, payload }) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="custom-tooltip">
-          <p className="tooltip-value">Slot {payload[0].payload.absoluteSlot}</p>
-        </div>
-      );
-    }
-    return null;
-  };
+  const nextLeaderProgressPercentage = statusInfo?.leaderProgress || 0;
+  const isImminent = nextLeaderProgressPercentage > 90;
 
   return (
     <div className="dashboard-panel status-panel leader-slots-panel">
       <h2>LEADER SLOTS</h2>
-      <div className="status-grid">
-        <div className="status-value">
-          {`${leaderSlots?.completed || 0}/${leaderSlots?.total || 0}`}
-        </div>
-        <div className="chart-wrapper">
-          <div className="chart-container">
-            <ResponsiveContainer width="100%" height={100}>
-              <AreaChart data={chartData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
-                <defs>
-                  <linearGradient id="colorSlot" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#D1FB0E" stopOpacity={0.2}/>
-                    <stop offset="95%" stopColor="#D1FB0E" stopOpacity={0.02}/>
-                  </linearGradient>
-                </defs>
-                <Tooltip content={<CustomTooltip />} />
-                <Area
-                  type="monotone"
-                  dataKey="value"
-                  stroke="#D1FB0E"
-                  strokeWidth={1.5}
-                  fill="url(#colorSlot)"
-                  isAnimationActive={false}
-                  dot={false}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
+      <div className="status-grid"> 
+        {/* Row 1: TOTAL Leader Slots Count (left) AND Main Leader Slots Progress Bar (right) */}
+        <div style={{ display: 'flex', alignItems: 'center', width: '100%', marginTop: '5px' }}>
+          <div className="status-item" style={{ marginRight: '10px', marginBottom: '0px' }}>
+            <label>TOTAL</label>
+            <div className="status-value" style={{ paddingLeft: '0px' }}>
+              {`${leaderSlots?.completed || 0}/${leaderSlots?.total || 0}`}
+            </div>
+          </div>
+          <div className="chart-wrapper" style={{ flexGrow: 1, width: 'auto' }}>
+            <div className="leader-slot-progress" style={{ height: '3px' }}> 
+              <div
+                className="leader-slot-progress-fill"
+                style={{ width: `${leaderSlotsProgressPercentage}%` }}
+              />
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-  );
-});
 
-const EpochProgressBar = memo(() => {
-  const { epochInfo } = useEpochInfo();
-
-  return (
-    <div className="epoch-progress-bar-container">
-      <div className="epoch-info">
-        <span className="epoch-number">{epochInfo?.currentEpoch || '...'}</span>
-      </div>
-      <div className="epoch-progress-bar">
-        <div 
-          className="epoch-progress-bar-fill" 
-          style={{ width: `${epochInfo?.progress}%` }}
-        />
-      </div>
-      <div className="epoch-progress-text">
-        {epochInfo?.progress.toFixed(2)}% Complete
+        {/* Row 2: Next Leader Info - Time and Bar on the same line */}
+        {statusInfo && (
+          <div className="status-item with-progress" style={{ marginTop: '5px' }}>
+            <label>Next Leader</label>
+            <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+              <value style={{ marginRight: '10px' }}>
+                {statusInfo.time_until_leader && statusInfo.time_until_leader !== 'N/A' 
+                  ? statusInfo.time_until_leader 
+                  : 'N/A'}
+              </value>
+              {statusInfo.next_leader_slot !== 'N/A' && (
+                <div className="leader-slot-progress" style={{ flexGrow: 1 }}> 
+                  <div
+                    className={`leader-slot-progress-fill${isImminent ? ' imminent' : ''}`}
+                    style={{ width: `${nextLeaderProgressPercentage}%` }}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

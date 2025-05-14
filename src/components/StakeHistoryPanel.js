@@ -1,11 +1,14 @@
 import React from 'react';
 import { AreaChart, Area, ResponsiveContainer, Tooltip, XAxis } from 'recharts';
 import { useStakeHistory } from '../hooks/useStakeHistory';
+import { useStakewizData } from '../hooks/useStakewizData';
 
 const StakeHistoryPanel = () => {
-  const { stakeHistory, loading, error } = useStakeHistory();
+  const { stakeHistory, loading: stakeHistoryLoading, error: stakeHistoryError } = useStakeHistory();
+  const { validatorInfo, loading: stakewizLoading, error: stakewizError } = useStakewizData();
 
-  if (loading || error) return null;
+  if (stakeHistoryLoading || stakewizLoading) return null;
+  if (stakeHistoryError || stakewizError) return null;
 
   const displayData = [...stakeHistory].reverse().map(item => ({
     epoch: item.epoch,
@@ -27,6 +30,11 @@ const StakeHistoryPanel = () => {
   return (
     <div className="dashboard-panel stake-history-panel">
       <h2>Active Stake</h2>
+      <div className="status-item stake-metric-item">
+        <value className="stake-value-styling">
+          {Math.round(validatorInfo?.activated_stake || 0).toLocaleString()} SOL
+        </value>
+      </div>
       <div className="chart-wrapper">
         <div className="chart-container">
           <ResponsiveContainer width="100%" height={90}>

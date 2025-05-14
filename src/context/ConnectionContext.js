@@ -4,7 +4,7 @@ import { Connection } from '@solana/web3.js';
 const ConnectionContext = createContext();
 
 export function ConnectionProvider({ children }) {
-  const connection = new Connection('https://mainnet.helius-rpc.com/?api-key=f0751d28-271a-4b42-a667-3333a6c49d7c');
+  const connection = new Connection(process.env.REACT_APP_HELIUS_RPC_URL);
 
   return (
     <ConnectionContext.Provider value={connection}>

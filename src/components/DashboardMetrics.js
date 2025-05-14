@@ -1,6 +1,5 @@
 import React from 'react';
 import ValidatorInfo from './ValidatorInfo';
-import StakewizMetrics from './StakewizMetrics';
 import VoteSuccessPanel from './VoteSuccessPanel';
 import StakeHistoryPanel from './StakeHistoryPanel';
 import UpcomingStakeChangesPanel from './UpcomingStakeChangesPanel';
@@ -14,9 +13,6 @@ const DashboardMetrics = () => {
       <div className="bento-grid">
         <div className="bento-cell validator-info">
           <ValidatorInfo />
-        </div>
-        <div className="bento-cell stakewiz">
-          <StakewizMetrics />
         </div>
         <div className="bento-cell vote-success">
           <VoteSuccessPanel />

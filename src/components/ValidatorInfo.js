@@ -38,6 +38,15 @@ const ValidatorInfo = () => {
       <div className="validator-info-content">
         <div className="status-grid">
           <div className="status-item">
+            <label>Status</label>
+            <value className={stakewizInfo?.delinquent ? 'error' : 'success'}>
+              <span 
+                className={`status-indicator-circle ${stakewizInfo?.delinquent ? 'status-delinquent' : 'status-active'}`}
+              ></span>
+              {stakewizInfo?.delinquent ? 'Delinquent' : 'Active'}
+            </value>
+          </div>
+          <div className="status-item">
             <label>Name</label>
             <value>{validatorInfo?.name}</value>
           </div>
